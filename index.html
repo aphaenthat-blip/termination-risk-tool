@@ -6,938 +6,771 @@
 <title>Termination Risk Assessment</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
+:root{
+  --bg:#F7F6F2;--surface:#fff;--border:rgba(0,0,0,0.1);--border-s:rgba(0,0,0,0.18);
+  --text:#1A1A1A;--text2:#555550;--text3:#888882;
+  --accent:#1A3A5C;--accent-l:#E8EFF7;
+  --red:#B83232;--red-l:#FBEAEA;
+  --orange:#9A5010;--orange-l:#FBF0E6;
+  --amber:#7A6010;--amber-l:#FBF6E6;
+  --green:#2A6040;--green-l:#E8F4EE;
+  --purple:#4A3A8A;--purple-l:#EFEDFC;
+  --r:8px;--rl:12px;
+  --font:'IBM Plex Sans Thai',sans-serif;--mono:'IBM Plex Mono',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;font-size:14px;line-height:1.6;}
+.page-hdr{background:var(--accent);color:#fff;padding:20px 28px;display:flex;align-items:flex-end;justify-content:space-between;gap:12px;}
+.page-hdr h1{font-size:19px;font-weight:600;letter-spacing:-0.02em;}
+.page-hdr p{font-size:11px;opacity:0.6;margin-top:2px;}
+.hdr-badge{font-family:var(--mono);font-size:10px;padding:3px 9px;border:1px solid rgba(255,255,255,0.3);border-radius:4px;opacity:0.75;white-space:nowrap;}
+.container{max-width:860px;margin:0 auto;padding:20px 16px 60px;}
 
-:root {
-  --bg: #F7F6F2;
-  --surface: #FFFFFF;
-  --border: rgba(0,0,0,0.1);
-  --border-strong: rgba(0,0,0,0.18);
-  --text: #1A1A1A;
-  --text-2: #555550;
-  --text-3: #888882;
-  --accent: #1A3A5C;
-  --accent-light: #E8EFF7;
-  --red: #B83232;
-  --red-light: #FBEAEA;
-  --orange: #9A5010;
-  --orange-light: #FBF0E6;
-  --amber: #7A6010;
-  --amber-light: #FBF6E6;
-  --green: #2A6040;
-  --green-light: #E8F4EE;
-  --purple: #4A3A8A;
-  --purple-light: #EFEDFC;
-  --radius: 8px;
-  --radius-lg: 12px;
-  --font: 'IBM Plex Sans Thai', sans-serif;
-  --mono: 'IBM Plex Mono', monospace;
-}
+/* Steps */
+.step{background:var(--surface);border:0.5px solid var(--border-s);border-radius:var(--rl);margin-bottom:10px;overflow:hidden;}
+.step-hdr{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:0.5px solid var(--border);}
+.step-num{font-family:var(--mono);font-size:11px;font-weight:500;color:#fff;background:var(--accent);width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.step-num.done{background:var(--green);}
+.step-num.blocked{background:var(--purple);}
+.step-title{font-size:13px;font-weight:500;flex:1;}
+.step-status{font-family:var(--mono);font-size:10px;padding:2px 8px;border-radius:4px;}
+.st-pending{background:var(--bg);color:var(--text3);}
+.st-ok{background:var(--green-l);color:var(--green);}
+.st-warn{background:var(--amber-l);color:var(--amber);}
+.st-danger{background:var(--red-l);color:var(--red);}
+.st-block{background:var(--purple-l);color:var(--purple);}
+.step-body{padding:14px 16px;display:flex;flex-direction:column;gap:12px;}
 
-* { box-sizing: border-box; margin: 0; padding: 0; }
+/* Fields */
+.field{display:flex;flex-direction:column;gap:5px;}
+.field>label{font-size:11px;font-weight:500;color:var(--text2);}
+.field select{font-family:var(--font);font-size:12px;padding:7px 10px;border:0.5px solid var(--border-s);border-radius:var(--r);background:var(--bg);color:var(--text);cursor:pointer;}
+.field select:focus{outline:2px solid var(--accent);outline-offset:1px;}
+.range-row{display:flex;align-items:center;gap:10px;}
+.range-row input[type=range]{flex:1;accent-color:var(--accent);cursor:pointer;}
+.rv{font-family:var(--mono);font-size:12px;font-weight:500;color:var(--accent);min-width:44px;text-align:right;}
+.tg{display:flex;gap:5px;flex-wrap:wrap;}
+.tg-btn{font-family:var(--font);font-size:11px;padding:4px 10px;border:0.5px solid var(--border-s);border-radius:20px;cursor:pointer;background:var(--bg);color:var(--text2);transition:all 0.15s;}
+.tg-btn:hover{border-color:var(--accent);color:var(--accent);}
+.tg-btn.sel{background:var(--accent);border-color:var(--accent);color:#fff;}
+.tg-btn.sel-warn{background:var(--amber);border-color:var(--amber);color:#fff;}
+.tg-btn.sel-danger{background:var(--red);border-color:var(--red);color:#fff;}
+.tg-btn.sel-block{background:var(--purple);border-color:var(--purple);color:#fff;}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+@media(max-width:560px){.field-row{grid-template-columns:1fr;}}
 
-body {
-  font-family: var(--font);
-  background: var(--bg);
-  color: var(--text);
-  min-height: 100vh;
-  font-size: 14px;
-  line-height: 1.6;
-}
+/* Hard Stop */
+.hs-panel{background:var(--purple-l);border:1px solid rgba(74,58,138,0.25);border-radius:var(--rl);padding:14px 16px;margin-bottom:10px;display:none;}
+.hs-title{font-family:var(--mono);font-size:11px;font-weight:500;color:var(--purple);margin-bottom:8px;letter-spacing:0.04em;}
+.hs-item{font-size:12px;color:#3A2A7A;padding:3px 0 3px 14px;position:relative;}
+.hs-item::before{content:'';position:absolute;left:0;top:9px;width:5px;height:5px;border-radius:50%;background:var(--purple);}
 
-.page-header {
-  background: var(--accent);
-  color: #fff;
-  padding: 24px 32px;
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 16px;
-}
-.page-header h1 { font-size: 20px; font-weight: 600; letter-spacing: -0.02em; }
-.page-header p { font-size: 12px; opacity: 0.65; margin-top: 3px; }
-.header-badge {
-  font-family: var(--mono);
-  font-size: 10px;
-  padding: 4px 10px;
-  border: 1px solid rgba(255,255,255,0.3);
-  border-radius: 4px;
-  opacity: 0.8;
-  white-space: nowrap;
-}
+/* Flow selector */
+.flow-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;}
+.flow-card{border:0.5px solid var(--border-s);border-radius:var(--rl);padding:12px 14px;cursor:pointer;background:var(--bg);transition:all 0.15s;text-align:center;}
+.flow-card:hover{border-color:var(--accent);background:var(--accent-l);}
+.flow-card.active{border:2px solid var(--accent);background:var(--accent-l);}
+.flow-card .fc-icon{font-size:20px;margin-bottom:4px;}
+.flow-card .fc-title{font-size:12px;font-weight:500;color:var(--text);}
+.flow-card .fc-sub{font-size:10px;color:var(--text3);margin-top:2px;}
 
-.container { max-width: 880px; margin: 0 auto; padding: 24px 20px 60px; }
+/* Buttons */
+.btn-primary{width:100%;padding:11px;font-family:var(--font);font-size:14px;font-weight:600;background:var(--accent);color:#fff;border:none;border-radius:var(--rl);cursor:pointer;margin-bottom:10px;transition:opacity 0.15s;}
+.btn-primary:hover{opacity:0.9;}
+.btn-secondary{width:100%;padding:9px;font-family:var(--font);font-size:13px;color:var(--text2);background:var(--surface);border:0.5px solid var(--border-s);border-radius:var(--r);cursor:pointer;margin-bottom:10px;transition:background 0.15s;}
+.btn-secondary:hover{background:var(--bg);}
 
-.emp-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  margin-bottom: 20px;
-}
-.emp-row input {
-  font-family: var(--font);
-  font-size: 13px;
-  padding: 9px 12px;
-  border: 0.5px solid var(--border-strong);
-  border-radius: var(--radius);
-  background: var(--surface);
-  color: var(--text);
-  width: 100%;
-}
-.emp-row input::placeholder { color: var(--text-3); }
-.emp-row input:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
-
-.sections { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
-
-.section {
-  background: var(--surface);
-  border: 0.5px solid var(--border-strong);
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-}
-
-.sec-hdr {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 11px 16px;
-  cursor: pointer;
-  user-select: none;
-  border-bottom: 0.5px solid var(--border);
-  transition: background 0.15s;
-}
-.sec-hdr:hover { background: var(--bg); }
-
-.sec-num {
-  font-family: var(--mono);
-  font-size: 10px;
-  color: var(--text-3);
-  width: 20px;
-  flex-shrink: 0;
-}
-.sec-title { font-size: 13px; font-weight: 500; flex: 1; }
-.sec-badge {
-  font-family: var(--mono);
-  font-size: 10px;
-  font-weight: 500;
-  padding: 2px 8px;
-  border-radius: 4px;
-}
-.badge-block { background: var(--purple-light); color: var(--purple); }
-.badge-crit { background: var(--red-light); color: var(--red); }
-.badge-high { background: var(--orange-light); color: var(--orange); }
-.badge-med { background: var(--amber-light); color: var(--amber); }
-.badge-low { background: var(--green-light); color: var(--green); }
-
-.sec-arrow {
-  font-size: 10px;
-  color: var(--text-3);
-  transition: transform 0.2s;
-  flex-shrink: 0;
-}
-.sec-arrow.open { transform: rotate(90deg); }
-
-.sec-body {
-  padding: 14px 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.field { display: flex; flex-direction: column; gap: 5px; }
-.field > label {
-  font-size: 11px;
-  color: var(--text-2);
-  font-weight: 500;
-}
-
-.field select {
-  font-family: var(--font);
-  font-size: 12px;
-  padding: 7px 10px;
-  border: 0.5px solid var(--border-strong);
-  border-radius: var(--radius);
-  background: var(--bg);
-  color: var(--text);
-  cursor: pointer;
-}
-.field select:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
-
-.range-row { display: flex; align-items: center; gap: 10px; }
-.range-row input[type=range] {
-  flex: 1;
-  height: 4px;
-  accent-color: var(--accent);
-  cursor: pointer;
-}
-.rv {
-  font-family: var(--mono);
-  font-size: 12px;
-  font-weight: 500;
-  color: var(--accent);
-  min-width: 44px;
-  text-align: right;
-}
-
-.tg { display: flex; gap: 5px; flex-wrap: wrap; }
-.tg-btn {
-  font-family: var(--font);
-  font-size: 11px;
-  padding: 4px 10px;
-  border: 0.5px solid var(--border-strong);
-  border-radius: 20px;
-  cursor: pointer;
-  background: var(--bg);
-  color: var(--text-2);
-  transition: all 0.15s;
-}
-.tg-btn:hover { border-color: var(--accent); color: var(--accent); }
-.tg-btn.sel { background: var(--accent); border-color: var(--accent); color: #fff; }
-.tg-btn.sel-warn { background: var(--amber); border-color: var(--amber); color: #fff; }
-.tg-btn.sel-danger { background: var(--red); border-color: var(--red); color: #fff; }
-.tg-btn.sel-block { background: var(--purple); border-color: var(--purple); color: #fff; }
-
-.hard-stop-panel {
-  background: var(--purple-light);
-  border: 1px solid rgba(74,58,138,0.25);
-  border-radius: var(--radius-lg);
-  padding: 14px 16px;
-  margin-bottom: 16px;
-  display: none;
-}
-.hs-title {
-  font-family: var(--mono);
-  font-size: 11px;
-  font-weight: 500;
-  color: var(--purple);
-  margin-bottom: 8px;
-  letter-spacing: 0.04em;
-}
-.hs-item {
-  font-size: 12px;
-  color: #3A2A7A;
-  padding: 3px 0 3px 14px;
-  position: relative;
-}
-.hs-item::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 9px;
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: var(--purple);
-}
-
-.btn-assess {
-  width: 100%;
-  padding: 12px;
-  font-family: var(--font);
-  font-size: 14px;
-  font-weight: 600;
-  background: var(--accent);
-  color: #fff;
-  border: none;
-  border-radius: var(--radius-lg);
-  cursor: pointer;
-  margin-bottom: 20px;
-  transition: opacity 0.15s, transform 0.1s;
-  letter-spacing: 0.01em;
-}
-.btn-assess:hover { opacity: 0.9; }
-.btn-assess:active { transform: scale(0.99); }
-
-.result-panel {
-  background: var(--surface);
-  border: 0.5px solid var(--border-strong);
-  border-radius: var(--radius-lg);
-  padding: 20px;
-  display: none;
-  margin-bottom: 20px;
-}
-
-.r-top { display: flex; align-items: flex-start; gap: 16px; margin-bottom: 16px; }
-
-.r-circle {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-.r-circle .rn { font-family: var(--mono); font-size: 26px; font-weight: 500; line-height: 1; }
-.r-circle .rl { font-size: 10px; margin-top: 2px; opacity: 0.7; }
-.lv-blocked { background: var(--purple-light); color: var(--purple); }
-.lv-crit { background: var(--red-light); color: var(--red); }
-.lv-high { background: var(--orange-light); color: var(--orange); }
-.lv-med { background: var(--amber-light); color: var(--amber); }
-.lv-low { background: var(--green-light); color: var(--green); }
-
-.r-verdict { font-size: 18px; font-weight: 600; margin-bottom: 4px; }
-.r-sub { font-size: 12px; color: var(--text-2); margin-bottom: 10px; }
-.r-flags { display: flex; flex-wrap: wrap; gap: 4px; }
-.flag {
-  font-family: var(--mono);
-  font-size: 10px;
-  padding: 2px 7px;
-  border-radius: 4px;
-}
-.flag-block { background: var(--purple-light); color: var(--purple); }
-.flag-crit { background: var(--red-light); color: var(--red); }
-.flag-warn { background: var(--amber-light); color: var(--amber); }
-.flag-ok { background: var(--green-light); color: var(--green); }
-
-.divider { height: 0.5px; background: var(--border); margin: 16px 0; }
-
-.section-label {
-  font-family: var(--mono);
-  font-size: 10px;
-  font-weight: 500;
-  color: var(--text-3);
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  margin-bottom: 10px;
-}
-
-.brow { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
-.brow-lbl { font-size: 11px; color: var(--text-2); width: 200px; flex-shrink: 0; }
-.brow-bg { flex: 1; height: 5px; background: var(--bg); border-radius: 3px; overflow: hidden; }
-.brow-fill { height: 100%; border-radius: 3px; transition: width 0.4s ease; }
-.brow-sc { font-family: var(--mono); font-size: 11px; font-weight: 500; width: 36px; text-align: right; flex-shrink: 0; }
-
-.recs-title { font-size: 13px; font-weight: 600; margin-bottom: 10px; }
-.rec {
-  font-size: 12px;
-  padding: 8px 12px;
-  border-left: 2px solid;
-  border-radius: 0 6px 6px 0;
-  margin-bottom: 6px;
-  line-height: 1.55;
-}
-.rec.block { border-left-color: var(--purple); background: var(--purple-light); color: #3A2A7A; }
-.rec.crit { border-left-color: var(--red); background: var(--red-light); color: #8A2020; }
-.rec.warn { border-left-color: var(--amber); background: var(--amber-light); color: #5A4800; }
-.rec.ok { border-left-color: var(--green); background: var(--green-light); color: #1A4A30; }
-
-.print-btn {
-  display: block;
-  text-align: center;
-  padding: 10px;
-  font-family: var(--font);
-  font-size: 13px;
-  color: var(--text-2);
-  background: var(--surface);
-  border: 0.5px solid var(--border-strong);
-  border-radius: var(--radius);
-  cursor: pointer;
-  text-decoration: none;
-  margin-bottom: 8px;
-  transition: background 0.15s;
-}
-.print-btn:hover { background: var(--bg); }
-
-.footer {
-  text-align: center;
-  font-size: 11px;
-  color: var(--text-3);
-  margin-top: 32px;
-  padding-top: 16px;
-  border-top: 0.5px solid var(--border);
-}
-
-@media (max-width: 600px) {
-  .emp-row { grid-template-columns: 1fr; }
-  .page-header { padding: 18px 16px; }
-  .container { padding: 16px 12px 40px; }
-  .brow-lbl { width: 140px; font-size: 10px; }
-  .r-circle { width: 68px; height: 68px; }
-  .r-circle .rn { font-size: 22px; }
-}
-
-@media print {
-  body { background: #fff; }
-  .page-header { background: #1A3A5C !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-  .btn-assess, .print-btn { display: none; }
-  .result-panel { display: block !important; }
-  .sec-body { display: flex !important; }
-}
+/* Result */
+.result{background:var(--surface);border:0.5px solid var(--border-s);border-radius:var(--rl);padding:20px;margin-bottom:10px;display:none;}
+.r-top{display:flex;align-items:flex-start;gap:16px;margin-bottom:14px;}
+.r-circle{width:78px;height:78px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;}
+.r-circle .rn{font-family:var(--mono);font-size:24px;font-weight:500;line-height:1;}
+.r-circle .rl{font-size:10px;margin-top:2px;opacity:0.7;}
+.lv-blocked{background:var(--purple-l);color:var(--purple);}
+.lv-crit{background:var(--red-l);color:var(--red);}
+.lv-high{background:var(--orange-l);color:var(--orange);}
+.lv-med{background:var(--amber-l);color:var(--amber);}
+.lv-low{background:var(--green-l);color:var(--green);}
+.r-verdict{font-size:17px;font-weight:600;margin-bottom:3px;}
+.r-sub{font-size:12px;color:var(--text2);margin-bottom:8px;}
+.r-flags{display:flex;flex-wrap:wrap;gap:4px;}
+.flag{font-family:var(--mono);font-size:10px;padding:2px 7px;border-radius:4px;}
+.flag-block{background:var(--purple-l);color:var(--purple);}
+.flag-crit{background:var(--red-l);color:var(--red);}
+.flag-warn{background:var(--amber-l);color:var(--amber);}
+.flag-ok{background:var(--green-l);color:var(--green);}
+.divider{height:0.5px;background:var(--border);margin:14px 0;}
+.sec-lbl{font-family:var(--mono);font-size:10px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;}
+.brow{display:flex;align-items:center;gap:8px;margin-bottom:5px;}
+.brow-lbl{font-size:11px;color:var(--text2);width:195px;flex-shrink:0;}
+.brow-bg{flex:1;height:5px;background:var(--bg);border-radius:3px;overflow:hidden;}
+.brow-fill{height:100%;border-radius:3px;transition:width 0.4s ease;}
+.brow-sc{font-family:var(--mono);font-size:11px;font-weight:500;width:34px;text-align:right;flex-shrink:0;}
+.recs-title{font-size:13px;font-weight:600;margin-bottom:8px;}
+.rec{font-size:12px;padding:7px 11px;border-left:2px solid;border-radius:0 6px 6px 0;margin-bottom:5px;line-height:1.55;}
+.rec.block{border-left-color:var(--purple);background:var(--purple-l);color:#3A2A7A;}
+.rec.crit{border-left-color:var(--red);background:var(--red-l);color:#8A2020;}
+.rec.warn{border-left-color:var(--amber);background:var(--amber-l);color:#5A4800;}
+.rec.ok{border-left-color:var(--green);background:var(--green-l);color:#1A4A30;}
+.result-meta{font-size:11px;color:var(--text3);margin-top:4px;}
+.print-btn{display:block;text-align:center;padding:9px;font-family:var(--font);font-size:13px;color:var(--text2);background:var(--surface);border:0.5px solid var(--border-s);border-radius:var(--r);cursor:pointer;text-decoration:none;margin-bottom:8px;transition:background 0.15s;}
+.print-btn:hover{background:var(--bg);}
+.footer{text-align:center;font-size:11px;color:var(--text3);margin-top:24px;padding-top:14px;border-top:0.5px solid var(--border);}
+@media print{body{background:#fff;}.page-hdr{background:var(--accent)!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}.btn-primary,.btn-secondary,.print-btn{display:none;}.result{display:block!important;}.step-body{display:flex!important;}}
 </style>
 </head>
 <body>
-
-<div class="page-header">
+<div class="page-hdr">
   <div>
     <h1>Termination Risk Assessment</h1>
     <p>ประเมินความเสี่ยงทางกฎหมายและ HR ก่อนดำเนินการเลิกจ้าง</p>
   </div>
-  <div class="header-badge">v2.0 · 2568</div>
+  <div class="hdr-badge">v3.0 · 2568</div>
 </div>
-
 <div class="container">
 
-  <div class="emp-row">
-    <input type="text" id="empName" placeholder="ชื่อ / รหัสพนักงาน (optional)" />
-    <input type="text" id="position" placeholder="ตำแหน่ง / Property (optional)" />
-  </div>
-
-  <div class="sections" id="sections"></div>
-
-  <div class="hard-stop-panel" id="hardstop-panel">
-    <div class="hs-title">&#9632; HARD STOP — ห้ามเลิกจ้างโดยเด็ดขาด</div>
-    <div id="hardstop-items"></div>
-  </div>
-
-  <button class="btn-assess" onclick="assess()">ประเมิน Risk Assessment</button>
-
-  <div class="result-panel" id="result-panel">
-    <div class="r-top">
-      <div class="r-circle" id="r-circle">
-        <span class="rn" id="r-num">0</span>
-        <span class="rl" id="r-rl">/ 100</span>
+  <!-- Step 1: Employee Info -->
+  <div class="step" id="step1">
+    <div class="step-hdr">
+      <div class="step-num" id="s1-num">1</div>
+      <div class="step-title">ข้อมูลพนักงาน & กลุ่มต้องห้าม</div>
+      <div class="step-status st-pending" id="s1-status">รอกรอก</div>
+    </div>
+    <div class="step-body">
+      <div class="field-row">
+        <div class="field"><label>ชื่อ / รหัสพนักงาน</label><input type="text" id="empName" placeholder="optional" style="font-family:var(--font);font-size:13px;padding:7px 10px;border:0.5px solid var(--border-s);border-radius:var(--r);background:var(--bg);color:var(--text);width:100%;"></div>
+        <div class="field"><label>ตำแหน่ง</label><input type="text" id="position" placeholder="optional" style="font-family:var(--font);font-size:13px;padding:7px 10px;border:0.5px solid var(--border-s);border-radius:var(--r);background:var(--bg);color:var(--text);width:100%;"></div>
       </div>
+      <div class="field-row">
+        <div class="field">
+          <label>ระดับตำแหน่ง</label>
+          <select id="f-level" onchange="S.level=this.value;">
+            <option value="staff">พนักงาน / เจ้าหน้าที่ (Staff)</option>
+            <option value="teamlead">หัวหน้าทีม (Team Lead)</option>
+            <option value="funchead">ผู้จัดการฝ่าย / หัวหน้าหน่วยงาน (Function Head)</option>
+            <option value="csuite">ผู้บริหารระดับสูง (C-Suite)</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>สมาชิกสหภาพแรงงาน</label>
+          <div class="tg" id="tg-union">
+            <span class="tg-btn sel" data-field="union" data-val="no" data-s="" onclick="pickTg(this)">ไม่ใช่</span>
+            <span class="tg-btn" data-field="union" data-val="member" data-s="warn" onclick="pickTg(this)">สมาชิก</span>
+            <span class="tg-btn" data-field="union" data-val="officer" data-s="block" onclick="pickTg(this)">กรรมการสหภาพ</span>
+          </div>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>อายุงาน</label>
+          <div class="range-row"><input type="range" min="0" max="30" value="3" step="1" id="rng-tenure" oninput="S.tenure=parseInt(this.value);document.getElementById('rv-tenure').textContent=this.value+' ปี';checkHS();"><span class="rv" id="rv-tenure">3 ปี</span></div>
+        </div>
+        <div class="field">
+          <label>อายุพนักงาน</label>
+          <div class="range-row"><input type="range" min="20" max="65" value="35" step="1" id="rng-age" oninput="S.age=parseInt(this.value);document.getElementById('rv-age').textContent=this.value+' ปี';checkHS();"><span class="rv" id="rv-age">35 ปี</span></div>
+        </div>
+      </div>
+      <div style="border-top:0.5px solid var(--border);padding-top:12px;margin-top:2px;">
+        <div class="sec-lbl" style="margin-bottom:10px;">กลุ่มคุ้มครองพิเศษ — ตรวจสอบก่อนทุกกรณี</div>
+        <div class="field-row">
+          <div class="field">
+            <label>สถานะการตั้งครรภ์ / ลาคลอด</label>
+            <div class="tg" id="tg-pregnant">
+              <span class="tg-btn sel" data-field="pregnant" data-val="no" data-s="" onclick="pickTg(this)">ไม่ใช่</span>
+              <span class="tg-btn" data-field="pregnant" data-val="pregnant" data-s="block" onclick="pickTg(this)">ตั้งครรภ์</span>
+              <span class="tg-btn" data-field="pregnant" data-val="maternity" data-s="block" onclick="pickTg(this)">ลาคลอดอยู่</span>
+            </div>
+          </div>
+          <div class="field">
+            <label>รับราชการทหาร / ถูกเกณฑ์</label>
+            <div class="tg" id="tg-military">
+              <span class="tg-btn sel" data-field="military" data-val="no" data-s="" onclick="pickTg(this)">ไม่ใช่</span>
+              <span class="tg-btn" data-field="military" data-val="yes" data-s="block" onclick="pickTg(this)">ใช่</span>
+            </div>
+          </div>
+          <div class="field">
+            <label>เคยแจ้งเบาะแสต่อหน่วยงานรัฐ</label>
+            <div class="tg" id="tg-whistle">
+              <span class="tg-btn sel" data-field="whistle" data-val="no" data-s="" onclick="pickTg(this)">ไม่เคย</span>
+              <span class="tg-btn" data-field="whistle" data-val="yes" data-s="block" onclick="pickTg(this)">เคย</span>
+            </div>
+          </div>
+          <div class="field">
+            <label>เป็น Key Witness ในคดีที่ดำเนินอยู่</label>
+            <div class="tg" id="tg-witness">
+              <span class="tg-btn sel" data-field="witness" data-val="no" data-s="" onclick="pickTg(this)">ไม่ใช่</span>
+              <span class="tg-btn" data-field="witness" data-val="yes" data-s="block" onclick="pickTg(this)">ใช่</span>
+            </div>
+          </div>
+          <div class="field">
+            <label>ลาป่วยระยะยาว / มีใบรับรองแพทย์</label>
+            <div class="tg" id="tg-sickleave">
+              <span class="tg-btn sel" data-field="sickleave" data-val="no" data-s="" onclick="pickTg(this)">ไม่ใช่</span>
+              <span class="tg-btn" data-field="sickleave" data-val="yes" data-s="warn" onclick="pickTg(this)">ใช่</span>
+            </div>
+          </div>
+          <div class="field">
+            <label>มีความพิการ / รักษาโรคเรื้อรัง</label>
+            <div class="tg" id="tg-disability">
+              <span class="tg-btn sel" data-field="disability" data-val="no" data-s="" onclick="pickTg(this)">ไม่มี</span>
+              <span class="tg-btn" data-field="disability" data-val="yes" data-s="warn" onclick="pickTg(this)">มี</span>
+            </div>
+          </div>
+          <div class="field">
+            <label>เคยยื่น Grievance / ร้องเรียน HR</label>
+            <div class="tg" id="tg-grievance">
+              <span class="tg-btn sel" data-field="grievance" data-val="no" data-s="" onclick="pickTg(this)">ไม่เคย</span>
+              <span class="tg-btn" data-field="grievance" data-val="resolved" data-s="warn" onclick="pickTg(this)">เคย & แก้ไขแล้ว</span>
+              <span class="tg-btn" data-field="grievance" data-val="pending" data-s="danger" onclick="pickTg(this)">เคย & ยังค้างอยู่</span>
+            </div>
+          </div>
+          <div class="field">
+            <label>ทัศนคติ / พฤติกรรมหลังแจ้ง</label>
+            <select id="f-attitude" onchange="S.attitude=this.value;">
+              <option value="cooperative">ร่วมมือ / ยอมรับ</option>
+              <option value="neutral">เฉยๆ / ไม่แสดงออก</option>
+              <option value="resistant">ต่อต้าน / ไม่พอใจ</option>
+              <option value="threatening">ขู่จะฟ้อง / ก้าวร้าว</option>
+              <option value="lawyer">ติดต่อทนายความแล้ว</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <button class="btn-primary" onclick="goStep2()">ถัดไป — เลือกประเภทการพ้นงาน</button>
+    </div>
+  </div>
+
+  <!-- Hard Stop Panel -->
+  <div class="hs-panel" id="hs-panel">
+    <div class="hs-title">&#9632; HARD STOP — ห้ามเลิกจ้างโดยเด็ดขาด</div>
+    <div id="hs-items"></div>
+  </div>
+
+  <!-- Step 2: Flow selector -->
+  <div class="step" id="step2" style="display:none;">
+    <div class="step-hdr">
+      <div class="step-num" id="s2-num">2</div>
+      <div class="step-title">ประเภทการพ้นงาน</div>
+      <div class="step-status st-pending" id="s2-status">รอเลือก</div>
+    </div>
+    <div class="step-body">
+      <div class="flow-grid">
+        <div class="flow-card" id="fc-A" onclick="selectFlow('A')">
+          <div class="fc-icon">&#128172;</div>
+          <div class="fc-title">A — พนักงานร้องขอเอง</div>
+          <div class="fc-sub">ลาออก / ป่วยหนัก / ขอเกษียณก่อน</div>
+        </div>
+        <div class="flow-card" id="fc-B" onclick="selectFlow('B')">
+          <div class="fc-icon">&#127970;</div>
+          <div class="fc-title">B — Restructure / Redundancy</div>
+          <div class="fc-sub">ยุบตำแหน่ง / ลดจำนวนพนักงาน</div>
+        </div>
+        <div class="flow-card" id="fc-C" onclick="selectFlow('C')">
+          <div class="fc-icon">&#128200;</div>
+          <div class="fc-title">C — ผลงานไม่ผ่านเกณฑ์</div>
+          <div class="fc-sub">Performance / KPI ไม่ผ่าน</div>
+        </div>
+        <div class="flow-card" id="fc-D" onclick="selectFlow('D')">
+          <div class="fc-icon">&#128274;</div>
+          <div class="fc-title">D — วินัย / ความประพฤติ</div>
+          <div class="fc-sub">Misconduct / ผิดระเบียบ</div>
+        </div>
+        <div class="flow-card" id="fc-E" onclick="selectFlow('E')">
+          <div class="fc-icon">&#128203;</div>
+          <div class="fc-title">E — สัญญาสิ้นสุด / Mutual</div>
+          <div class="fc-sub">Contract end / ตกลงร่วมกัน</div>
+        </div>
+      </div>
+      <div id="step3-container" style="margin-top:4px;"></div>
+    </div>
+  </div>
+
+  <!-- Result -->
+  <div class="result" id="result-panel">
+    <div class="r-top">
+      <div class="r-circle" id="r-circle"><span class="rn" id="r-num">0</span><span class="rl" id="r-rl">/ 100</span></div>
       <div style="flex:1;">
         <div class="r-verdict" id="r-verdict">-</div>
         <div class="r-sub" id="r-sub">-</div>
         <div class="r-flags" id="r-flags"></div>
       </div>
     </div>
-
     <div class="divider"></div>
-    <div class="section-label">คะแนนความเสี่ยงรายด้าน</div>
+    <div class="sec-lbl">คะแนนความเสี่ยงรายด้าน</div>
     <div id="bdown-rows"></div>
-
     <div class="divider"></div>
-    <div class="recs-title">Action Required &amp; ข้อแนะนำ</div>
+    <div class="recs-title">Action Required & ข้อแนะนำ</div>
     <div id="rec-items"></div>
-
     <div class="divider"></div>
-    <div style="font-size:11px;color:var(--text-3);">
-      ประเมิน ณ วันที่: <span id="assess-date"></span> &nbsp;|&nbsp;
-      พนักงาน: <span id="result-name">-</span> &nbsp;|&nbsp;
-      ตำแหน่ง: <span id="result-pos">-</span>
-    </div>
+    <div class="result-meta">ประเมิน ณ วันที่: <span id="r-date"></span> &nbsp;|&nbsp; พนักงาน: <span id="r-name"></span> &nbsp;|&nbsp; ตำแหน่ง: <span id="r-pos"></span></div>
   </div>
-
-  <button class="print-btn" onclick="window.print()">พิมพ์ / บันทึก PDF</button>
-
+  <button class="print-btn" onclick="window.print()" id="print-btn" style="display:none;">พิมพ์ / บันทึก PDF</button>
   <div class="footer">Termination Risk Assessment Tool · สำหรับใช้ภายในองค์กรเท่านั้น</div>
 </div>
 
 <script>
-var S = {};
-
-var SECTIONS = [
-  {
-    id:'protected', num:'01',
-    title:'กลุ่มคุ้มครองพิเศษ (Protected Class)',
-    badge:'HARD STOP', badgeClass:'badge-block',
-    fields:[
-      {id:'pregnant',label:'สถานะการตั้งครรภ์',type:'toggle',opts:[
-        {v:'no',l:'ไม่ตั้งครรภ์',s:''},
-        {v:'yes',l:'ตั้งครรภ์อยู่',s:'block'},
-      ]},
-      {id:'maternity',label:'อยู่ระหว่างลาคลอด / ลาเพื่อเลี้ยงดูบุตร',type:'toggle',opts:[
-        {v:'no',l:'ไม่ใช่',s:''},
-        {v:'yes',l:'ใช่',s:'block'},
-      ]},
-      {id:'sick_leave',label:'อยู่ระหว่างลาป่วยระยะยาว / มีใบรับรองแพทย์',type:'toggle',opts:[
-        {v:'no',l:'ไม่ใช่',s:''},
-        {v:'yes',l:'ใช่',s:'warn'},
-      ]},
-      {id:'disability',label:'มีความพิการหรืออยู่ระหว่างรักษาโรคเรื้อรัง',type:'toggle',opts:[
-        {v:'no',l:'ไม่มี',s:''},
-        {v:'yes',l:'มี',s:'warn'},
-      ]},
-      {id:'military',label:'อยู่ระหว่างรับราชการทหาร / ถูกเกณฑ์',type:'toggle',opts:[
-        {v:'no',l:'ไม่ใช่',s:''},
-        {v:'yes',l:'ใช่',s:'block'},
-      ]},
-      {id:'whistleblow',label:'เคยแจ้งเบาะแส / ร้องเรียนต่อหน่วยงานรัฐ',type:'toggle',opts:[
-        {v:'no',l:'ไม่เคย',s:''},
-        {v:'yes',l:'เคย',s:'block'},
-      ]},
-    ]
-  },
-  {
-    id:'union', num:'02',
-    title:'สหภาพแรงงาน & ตัวแทนพนักงาน',
-    badge:'สูงมาก', badgeClass:'badge-crit',
-    fields:[
-      {id:'union_member',label:'เป็นสมาชิกสหภาพแรงงาน',type:'toggle',opts:[
-        {v:'no',l:'ไม่ใช่',s:''},
-        {v:'yes',l:'ใช่',s:'danger'},
-      ]},
-      {id:'union_officer',label:'เป็นกรรมการสหภาพ / ตัวแทนพนักงาน',type:'toggle',opts:[
-        {v:'no',l:'ไม่ใช่',s:''},
-        {v:'yes',l:'ใช่ — ต้องขออนุญาตศาลแรงงาน',s:'block'},
-      ]},
-      {id:'union_activity',label:'เคยเป็นแกนนำการเจรจา / นัดหยุดงาน',type:'toggle',opts:[
-        {v:'no',l:'ไม่เคย',s:''},
-        {v:'yes',l:'เคย',s:'danger'},
-      ]},
-      {id:'union_consent',label:'ต้องขอความเห็นชอบสหภาพก่อนเลิกจ้าง?',type:'toggle',opts:[
-        {v:'na',l:'ไม่มีข้อกำหนด',s:''},
-        {v:'obtained',l:'ได้รับแล้ว',s:''},
-        {v:'pending',l:'ยังไม่ได้ขอ',s:'danger'},
-      ]},
-    ]
-  },
-  {
-    id:'severance', num:'03',
-    title:'ค่าชดเชยและสิทธิตามกฎหมาย',
-    badge:'สูง', badgeClass:'badge-high',
-    fields:[
-      {id:'tenure',label:'อายุงาน',type:'range',min:0,max:30,val:3,unit:'ปี'},
-      {id:'age',label:'อายุพนักงาน',type:'range',min:20,max:65,val:40,unit:'ปี'},
-      {id:'comp_paid',label:'ค่าชดเชยที่จะจ่าย (ตามอายุงาน)',type:'toggle',opts:[
-        {v:'full',l:'ครบถ้วนตามกฎหมาย',s:''},
-        {v:'near_threshold',l:'ใกล้เปลี่ยน rate',s:'warn'},
-        {v:'under',l:'ต่ำกว่ากฎหมาย',s:'danger'},
-        {v:'none',l:'ไม่จ่าย',s:'danger'},
-      ]},
-      {id:'notice_paid',label:'ค่าจ้างแทนการบอกกล่าว (notice pay)',type:'toggle',opts:[
-        {v:'paid',l:'จ่ายครบ',s:''},
-        {v:'partial',l:'จ่ายบางส่วน',s:'warn'},
-        {v:'none',l:'ไม่จ่าย',s:'danger'},
-      ]},
-      {id:'annual_leave',label:'ค่าวันหยุดพักผ่อนสะสม (unused leave)',type:'toggle',opts:[
-        {v:'paid',l:'จ่ายครบ',s:''},
-        {v:'partial',l:'จ่ายบางส่วน',s:'warn'},
-        {v:'none',l:'ไม่จ่าย',s:'danger'},
-      ]},
-    ]
-  },
-  {
-    id:'reason', num:'04',
-    title:'เหตุผลและกระบวนการเลิกจ้าง',
-    badge:'สูง', badgeClass:'badge-high',
-    fields:[
-      {id:'term_reason',label:'เหตุผลในการเลิกจ้าง',type:'select',opts:[
-        {v:'restructure',l:'Restructure / ยุบตำแหน่ง'},
-        {v:'performance',l:'ผลงานไม่ผ่านเกณฑ์'},
-        {v:'misconduct',l:'ความประพฤติ / ผิดวินัย'},
-        {v:'contract_end',l:'สัญญาจ้างสิ้นสุด'},
-        {v:'mutual',l:'Mutual Agreement'},
-        {v:'redundancy',l:'ลดจำนวนพนักงาน (Redundancy)'},
-      ]},
-      {id:'restr_genuine',label:'ไม่รับพนักงานคนอื่นมาทดแทนตำแหน่งนี้จริง?',type:'toggle',conditional:'restructure',opts:[
-        {v:'yes',l:'ยืนยันว่าไม่รับแทน',s:''},
-        {v:'unsure',l:'ไม่แน่ใจ',s:'warn'},
-        {v:'no',l:'ยังรับคนอื่นแทน',s:'danger'},
-      ]},
-      {id:'written_notice',label:'มีหนังสือบอกกล่าวล่วงหน้าถูกต้อง?',type:'toggle',opts:[
-        {v:'yes',l:'ใช่',s:''},
-        {v:'no',l:'ไม่มี',s:'danger'},
-      ]},
-      {id:'reason_stated',label:'ระบุเหตุผลในหนังสือเลิกจ้างชัดเจน?',type:'toggle',opts:[
-        {v:'clear',l:'ชัดเจน & สมเหตุสมผล',s:''},
-        {v:'vague',l:'คลุมเครือ',s:'warn'},
-        {v:'none',l:'ไม่ระบุ',s:'danger'},
-      ]},
-    ]
-  },
-  {
-    id:'performance', num:'05',
-    title:'กระบวนการ Performance (กรณีผลงานไม่ผ่าน)',
-    badge:'สูง', badgeClass:'badge-high',
-    fields:[
-      {id:'pip',label:'มี PIP ก่อนเลิกจ้าง',type:'toggle',opts:[
-        {v:'completed',l:'มี & เสร็จสิ้นแล้ว',s:''},
-        {v:'ongoing',l:'อยู่ระหว่าง PIP',s:'warn'},
-        {v:'none',l:'ไม่มีเลย',s:'danger'},
-        {v:'na',l:'N/A (ไม่ใช่เหตุผลงาน)',s:''},
-      ]},
-      {id:'pip_sign',label:'พนักงานเซ็นรับทราบ PIP?',type:'toggle',opts:[
-        {v:'signed',l:'เซ็นรับทราบ',s:''},
-        {v:'refused_witnessed',l:'ปฏิเสธเซ็น — มีพยาน & บันทึก',s:'warn'},
-        {v:'refused_no_witness',l:'ปฏิเสธเซ็น — ไม่มีพยาน',s:'danger'},
-        {v:'not_delivered',l:'ยังไม่ได้ส่งให้',s:'danger'},
-        {v:'na',l:'N/A',s:''},
-      ]},
-      {id:'pip_doc',label:'หลักฐาน KPI / appraisal record ประกอบ',type:'toggle',opts:[
-        {v:'strong',l:'ครบ & แน่นหนา',s:''},
-        {v:'partial',l:'บางส่วน',s:'warn'},
-        {v:'none',l:'ไม่มีเลย',s:'danger'},
-        {v:'na',l:'N/A',s:''},
-      ]},
-    ]
-  },
-  {
-    id:'discipline', num:'06',
-    title:'กระบวนการวินัย & การชี้แจง',
-    badge:'สูง', badgeClass:'badge-high',
-    fields:[
-      {id:'warning_letter',label:'มีหนังสือเตือนอย่างเป็นทางการ?',type:'toggle',opts:[
-        {v:'yes',l:'มี — ครบขั้นตอน',s:''},
-        {v:'verbal_only',l:'เตือนวาจาเท่านั้น',s:'warn'},
-        {v:'no',l:'ไม่มีเลย',s:'danger'},
-      ]},
-      {id:'warning_sign',label:'พนักงานเซ็นรับทราบใบเตือน?',type:'toggle',opts:[
-        {v:'signed',l:'เซ็นรับทราบ',s:''},
-        {v:'refused_witnessed',l:'ปฏิเสธเซ็น — มีพยาน & บันทึก',s:'warn'},
-        {v:'refused_no_witness',l:'ปฏิเสธเซ็น — ไม่มีพยาน',s:'danger'},
-        {v:'not_delivered',l:'ยังไม่ได้ส่งให้',s:'danger'},
-        {v:'na',l:'N/A (ไม่มีใบเตือน)',s:''},
-      ]},
-      {id:'hearing',label:'มีการให้พนักงานชี้แจงก่อนเลิกจ้าง?',type:'toggle',opts:[
-        {v:'yes',l:'ใช่ & มีบันทึก',s:''},
-        {v:'informal',l:'ไม่เป็นทางการ',s:'warn'},
-        {v:'no',l:'ไม่มี',s:'danger'},
-      ]},
-      {id:'documentation',label:'หลักฐาน / เอกสารประกอบโดยรวม',type:'toggle',opts:[
-        {v:'strong',l:'ครบ & แน่นหนา',s:''},
-        {v:'partial',l:'บางส่วน',s:'warn'},
-        {v:'none',l:'ไม่มีเลย',s:'danger'},
-      ]},
-    ]
-  },
-  {
-    id:'employee', num:'07',
-    title:'ข้อมูลพนักงานและทัศนคติ',
-    badge:'ปานกลาง', badgeClass:'badge-med',
-    fields:[
-      {id:'attitude',label:'ทัศนคติ / พฤติกรรมหลังแจ้ง',type:'select',opts:[
-        {v:'cooperative',l:'ร่วมมือ / ยอมรับ'},
-        {v:'neutral',l:'เฉยๆ / ไม่แสดงออก'},
-        {v:'resistant',l:'ต่อต้าน / ไม่พอใจชัดเจน'},
-        {v:'threatening',l:'ขู่จะฟ้อง / ก้าวร้าว'},
-        {v:'lawyer',l:'ติดต่อทนายความแล้ว'},
-      ]},
-      {id:'prev_grievance',label:'เคยยื่น grievance / ร้องเรียน HR ก่อนหน้า?',type:'toggle',opts:[
-        {v:'no',l:'ไม่เคย',s:''},
-        {v:'resolved',l:'เคย & แก้ไขแล้ว',s:'warn'},
-        {v:'pending',l:'เคย & ยังค้างอยู่',s:'danger'},
-      ]},
-      {id:'near_retire',label:'อายุใกล้เกษียณ (เกณฑ์ 60 ปี)',type:'toggle',opts:[
-        {v:'no',l:'ต่ำกว่า 50 ปี',s:''},
-        {v:'approaching',l:'50–54 ปี',s:'warn'},
-        {v:'near',l:'55–59 ปี',s:'warn'},
-        {v:'at',l:'60 ปีขึ้นไป',s:'danger'},
-      ]},
-      {id:'key_witness',label:'เป็น key witness ในคดี / สอบสวนที่ยังดำเนินอยู่?',type:'toggle',opts:[
-        {v:'no',l:'ไม่ใช่',s:''},
-        {v:'yes',l:'ใช่',s:'block'},
-      ]},
-    ]
-  },
-  {
-    id:'employee_initiated', num:'08',
-    title:'การพ้นงานตามความประสงค์พนักงาน',
-    badge:'ปานกลาง', badgeClass:'badge-med',
-    fields:[
-      {id:'emp_init',label:'พนักงานเป็นฝ่ายร้องขอพ้นงานเอง?',type:'toggle',opts:[
-        {v:'no',l:'ไม่ใช่ — นายจ้างเป็นฝ่ายเลิกจ้าง',s:''},
-        {v:'yes',l:'ใช่ — พนักงานร้องขอเอง',s:''},
-      ]},
-      {id:'emp_init_reason',label:'เหตุผลที่พนักงานร้องขอ',type:'toggle',opts:[
-        {v:'na',l:'N/A',s:''},
-        {v:'resign',l:'ลาออกด้วยตัวเอง',s:''},
-        {v:'illness',l:'ป่วยหนัก / ทุพพลภาพทำงานไม่ได้',s:'warn'},
-        {v:'early_retire',l:'ขอเกษียณก่อนกำหนด',s:''},
-        {v:'mutual',l:'Mutual Agreement (พนักงานเริ่มก่อน)',s:''},
-      ]},
-      {id:'emp_init_letter',label:'มีหนังสือแสดงความประสงค์เป็นลายลักษณ์อักษร?',type:'toggle',opts:[
-        {v:'na',l:'N/A',s:''},
-        {v:'yes',l:'มี & ลงนามแล้ว',s:''},
-        {v:'verbal_only',l:'แจ้งด้วยวาจาเท่านั้น',s:'warn'},
-        {v:'no',l:'ไม่มี',s:'danger'},
-      ]},
-      {id:'emp_init_medical',label:'กรณีป่วย — มีใบรับรองแพทย์ยืนยัน?',type:'toggle',opts:[
-        {v:'na',l:'N/A (ไม่ใช่กรณีป่วย)',s:''},
-        {v:'yes',l:'มี',s:''},
-        {v:'no',l:'ไม่มี',s:'warn'},
-      ]},
-      {id:'emp_init_informed',label:'พนักงานได้รับแจ้งสิทธิครบถ้วนก่อนตัดสินใจ?',type:'toggle',opts:[
-        {v:'na',l:'N/A',s:''},
-        {v:'yes',l:'ใช่ & มีบันทึก',s:''},
-        {v:'partial',l:'บางส่วน',s:'warn'},
-        {v:'no',l:'ไม่ได้แจ้ง',s:'danger'},
-      ]},
-      {id:'emp_init_witness',label:'มีพยาน HR รับทราบและบันทึกไว้?',type:'toggle',opts:[
-        {v:'na',l:'N/A',s:''},
-        {v:'yes',l:'มี',s:''},
-        {v:'no',l:'ไม่มี',s:'warn'},
-      ]},
-      {id:'constructive',label:'มีความเสี่ยงว่าพนักงานถูกกดดันให้ลาออก (Constructive Dismissal)?',type:'toggle',opts:[
-        {v:'no',l:'ไม่มี',s:''},
-        {v:'possible',l:'อาจเป็นไปได้',s:'warn'},
-        {v:'yes',l:'มีความเสี่ยงสูง',s:'danger'},
-      ]},
-    ]
-  },
-  {
-    id:'financial', num:'09',
-    title:'ความเสี่ยงด้านชื่อเสียงและการเงิน',
-    badge:'ปานกลาง', badgeClass:'badge-med',
-    fields:[
-      {id:'salary_band',label:'ระดับตำแหน่ง',type:'select',opts:[
-        {v:'staff',l:'พนักงาน / เจ้าหน้าที่ (Staff)'},
-        {v:'teamlead',l:'หัวหน้าทีม (Team Lead)'},
-        {v:'funchead',l:'ผู้จัดการฝ่าย / หัวหน้าหน่วยงาน (Function Head)'},
-        {v:'csuite',l:'ผู้บริหารระดับสูง (C-Suite)'},
-      ]},
-      {id:'media_risk',label:'ความเสี่ยงด้านสื่อ / สาธารณะ',type:'toggle',opts:[
-        {v:'low',l:'ต่ำ',s:''},
-        {v:'med',l:'ปานกลาง (มี network)',s:'warn'},
-        {v:'high',l:'สูง (influencer / สื่อ)',s:'danger'},
-      ]},
-      {id:'replacement_ready',label:'มีแผน transition / handover ชัดเจน?',type:'toggle',opts:[
-        {v:'yes',l:'ใช่',s:''},
-        {v:'partial',l:'บางส่วน',s:'warn'},
-        {v:'no',l:'ยังไม่มี',s:'warn'},
-      ]},
-    ]
-  },
-];
-
-function updateConditionals(){
-  var allFields = [];
-  SECTIONS.forEach(function(sec){ sec.fields.forEach(function(f){ if(f.conditional) allFields.push(f); }); });
-  allFields.forEach(function(f){
-    var wrap = document.getElementById('field-wrap-'+f.id);
-    if(wrap){ wrap.style.display = (S.term_reason===f.conditional) ? 'flex' : 'none'; }
-  });
-}
-
-function initUI(){
-  var html='';
-  SECTIONS.forEach(function(sec,idx){
-    html += '<div class="section" id="sec-'+sec.id+'">';
-    html += '<div class="sec-hdr" onclick="toggleSec(\''+sec.id+'\')">';
-    html += '<span class="sec-num">'+sec.num+'</span>';
-    html += '<span class="sec-title">'+sec.title+'</span>';
-    html += '<span class="sec-badge '+sec.badgeClass+'">'+sec.badge+'</span>';
-    html += '<span class="sec-arrow open" id="arr-'+sec.id+'">&#9658;</span>';
-    html += '</div>';
-    html += '<div class="sec-body" id="body-'+sec.id+'">';
-    sec.fields.forEach(function(f){
-      var condShow = !f.conditional || S.term_reason === f.conditional;
-      html += '<div class="field" id="field-wrap-'+f.id+'" style="'+(condShow?'':'display:none')+'">';
-      html += '<label>'+f.label+'</label>';
-      if(f.type==='toggle'){
-        html += '<div class="tg" id="tg-'+f.id+'">';
-        f.opts.forEach(function(o,i){
-          var sc = i===0 ? ' sel' : '';
-          html += '<span class="tg-btn'+sc+'" data-field="'+f.id+'" data-val="'+o.v+'" data-s="'+o.s+'" onclick="pickTg(this)">'+o.l+'</span>';
-        });
-        html += '</div>';
-        S[f.id] = f.opts[0].v;
-      } else if(f.type==='select'){
-        var oc = "S[\'" + f.id + "\' ]=this.value;checkHS();" + (f.id==='term_reason'?'updateConditionals();':'');
-        html += '<select id="sel-'+f.id+'" onchange="'+oc+'">'+'';
-        f.opts.forEach(function(o){ html += '<option value="'+o.v+'">'+o.l+'</option>'; });
-        html += '</select>';
-        S[f.id] = f.opts[0].v;
-      } else if(f.type==='range'){
-        S[f.id] = f.val;
-        html += '<div class="range-row"><input type="range" min="'+f.min+'" max="'+f.max+'" value="'+f.val+'" step="1" id="rng-'+f.id+'" oninput="S[\''+f.id+'\']=parseInt(this.value);document.getElementById(\'rv-'+f.id+'\').textContent=this.value+\' '+f.unit+'\';checkHS();"><span class="rv" id="rv-'+f.id+'">'+f.val+' '+f.unit+'</span></div>';
-      }
-      html += '</div>';
-    });
-    html += '</div></div>';
-  });
-  document.getElementById('sections').innerHTML = html;
-}
-
-function toggleSec(id){
-  var b = document.getElementById('body-'+id);
-  var a = document.getElementById('arr-'+id);
-  if(b.style.display==='none'){ b.style.display='flex'; a.classList.add('open'); }
-  else { b.style.display='none'; a.classList.remove('open'); }
-}
+var S={
+  level:'staff',tenure:3,age:35,
+  union:'no',pregnant:'no',military:'no',whistle:'no',witness:'no',
+  sickleave:'no',disability:'no',grievance:'no',attitude:'cooperative',
+  flow:null
+};
 
 function pickTg(el){
-  var fid = el.dataset.field;
-  var tg = document.getElementById('tg-'+fid);
-  tg.querySelectorAll('.tg-btn').forEach(function(b){
+  var fid=el.dataset.field;
+  document.getElementById('tg-'+fid).querySelectorAll('.tg-btn').forEach(function(b){
     b.classList.remove('sel','sel-warn','sel-danger','sel-block');
   });
-  var st = el.dataset.s;
+  var st=el.dataset.s;
   if(st==='block') el.classList.add('sel-block');
   else if(st==='danger') el.classList.add('sel-danger');
   else if(st==='warn') el.classList.add('sel-warn');
   else el.classList.add('sel');
-  S[el.dataset.field] = el.dataset.val;
+  S[fid]=el.dataset.val;
   checkHS();
 }
 
 function checkHS(){
-  var stops = [];
-  if(S.pregnant==='yes') stops.push('พนักงานตั้งครรภ์ — ห้ามเลิกจ้างตาม พ.ร.บ.คุ้มครองแรงงาน มาตรา 43 โทษจำคุก 6 เดือน–1 ปี หรือปรับสูงสุด 200,000 บาท');
-  if(S.maternity==='yes') stops.push('อยู่ระหว่างลาคลอด — ห้ามเลิกจ้างโดยเด็ดขาด ต้องรอให้กลับมาทำงานก่อน');
+  var stops=[];
+  if(S.pregnant==='pregnant') stops.push('พนักงานตั้งครรภ์ — ห้ามเลิกจ้างตาม พ.ร.บ.คุ้มครองแรงงาน มาตรา 43 โทษจำคุก 6 เดือน–1 ปี หรือปรับสูงสุด 200,000 บาท');
+  if(S.pregnant==='maternity') stops.push('อยู่ระหว่างลาคลอด — ห้ามเลิกจ้างโดยเด็ดขาด ต้องรอให้กลับมาทำงานก่อน');
   if(S.military==='yes') stops.push('อยู่ระหว่างรับราชการทหาร — ต้องรับกลับเข้าทำงานภายใน 30 วันหลังปลดประจำการ');
-  if(S.whistleblow==='yes') stops.push('เคยแจ้งเบาะแสต่อหน่วยงานรัฐ — เสี่ยงถูกฟ้อง retaliation ปรึกษา Compliance ก่อน');
-  if(S.union_officer==='yes') stops.push('กรรมการสหภาพแรงงาน — ต้องยื่นคำร้องต่อศาลแรงงานและได้รับอนุญาตก่อน (ม.52 พ.ร.บ.แรงงานสัมพันธ์)');
-  if(S.key_witness==='yes') stops.push('เป็น key witness ในคดี — การเลิกจ้างอาจถูกมองว่า obstruction ปรึกษาทนายก่อน');
-  var panel = document.getElementById('hardstop-panel');
+  if(S.union==='officer') stops.push('กรรมการสหภาพแรงงาน — ต้องยื่นคำร้องต่อศาลแรงงานและได้รับอนุญาตก่อน (ม.52 พ.ร.บ.แรงงานสัมพันธ์)');
+  if(S.whistle==='yes') stops.push('เคยแจ้งเบาะแสต่อหน่วยงานรัฐ — เสี่ยงถูกฟ้อง Retaliation ปรึกษา Compliance ก่อน');
+  if(S.witness==='yes') stops.push('เป็น Key Witness ในคดีที่ดำเนินอยู่ — การเลิกจ้างอาจถูกมองว่า Obstruction of Justice ปรึกษาทนายก่อน');
+  var panel=document.getElementById('hs-panel');
   if(stops.length>0){
-    document.getElementById('hardstop-items').innerHTML = stops.map(function(s){ return '<div class="hs-item">'+s+'</div>'; }).join('');
+    document.getElementById('hs-items').innerHTML=stops.map(function(s){return '<div class="hs-item">'+s+'</div>';}).join('');
     panel.style.display='block';
   } else {
     panel.style.display='none';
   }
 }
 
-function bc(pct){ return pct<=30?'#2A6040':pct<=60?'#7A6010':'#B83232'; }
+function goStep2(){
+  S.level=document.getElementById('f-level').value;
+  S.attitude=document.getElementById('f-attitude').value;
+  S.tenure=parseInt(document.getElementById('rng-tenure').value);
+  S.age=parseInt(document.getElementById('rng-age').value);
+  document.getElementById('s1-num').classList.add('done');
+  document.getElementById('s1-status').className='step-status st-ok';
+  document.getElementById('s1-status').textContent='เสร็จแล้ว';
+  document.getElementById('step2').style.display='block';
+  document.getElementById('step2').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function selectFlow(flow){
+  S.flow=flow;
+  ['A','B','C','D','E'].forEach(function(f){
+    document.getElementById('fc-'+f).classList.remove('active');
+  });
+  document.getElementById('fc-'+flow).classList.add('active');
+  document.getElementById('s2-status').className='step-status st-ok';
+  document.getElementById('s2-status').textContent='เลือกแล้ว: '+flow;
+  renderStep3(flow);
+}
+
+var FLOWS={
+  A:{
+    title:'A — พนักงานร้องขอพ้นงานเอง',
+    fields:[
+      {id:'a_reason',label:'เหตุผลที่ร้องขอ',type:'toggle',opts:[
+        {v:'resign',l:'ลาออกเอง',s:''},
+        {v:'illness',l:'ป่วยหนัก / ทุพพลภาพ',s:'warn'},
+        {v:'early_retire',l:'ขอเกษียณก่อนกำหนด',s:''},
+        {v:'mutual',l:'Mutual Agreement',s:''},
+      ]},
+      {id:'a_letter',label:'มีหนังสือแสดงความประสงค์เป็นลายลักษณ์อักษร?',type:'toggle',opts:[
+        {v:'yes',l:'มี & ลงนามแล้ว',s:''},
+        {v:'verbal',l:'วาจาเท่านั้น',s:'warn'},
+        {v:'no',l:'ไม่มี',s:'danger'},
+      ]},
+      {id:'a_medical',label:'กรณีป่วย — มีใบรับรองแพทย์?',type:'toggle',opts:[
+        {v:'na',l:'N/A',s:''},
+        {v:'yes',l:'มี',s:''},
+        {v:'no',l:'ไม่มี',s:'warn'},
+      ]},
+      {id:'a_informed',label:'พนักงานได้รับแจ้งสิทธิครบก่อนตัดสินใจ?',type:'toggle',opts:[
+        {v:'yes',l:'ใช่ & มีบันทึก',s:''},
+        {v:'partial',l:'บางส่วน',s:'warn'},
+        {v:'no',l:'ไม่ได้แจ้ง',s:'danger'},
+      ]},
+      {id:'a_witness',label:'มีพยาน HR รับทราบและบันทึก?',type:'toggle',opts:[
+        {v:'yes',l:'มี',s:''},
+        {v:'no',l:'ไม่มี',s:'warn'},
+      ]},
+      {id:'a_constructive',label:'ความเสี่ยง Constructive Dismissal (ถูกกดดันให้ออก)?',type:'toggle',opts:[
+        {v:'no',l:'ไม่มี',s:''},
+        {v:'possible',l:'อาจเป็นไปได้',s:'warn'},
+        {v:'yes',l:'มีความเสี่ยงสูง',s:'danger'},
+      ]},
+    ]
+  },
+  B:{
+    title:'B — Restructure / Redundancy',
+    fields:[
+      {id:'b_genuine',label:'ไม่รับพนักงานคนอื่นมาทดแทนตำแหน่งนี้จริง?',type:'toggle',opts:[
+        {v:'yes',l:'ยืนยันว่าไม่รับแทน',s:''},
+        {v:'unsure',l:'ไม่แน่ใจ',s:'warn'},
+        {v:'no',l:'ยังรับคนอื่นแทน',s:'danger'},
+      ]},
+      {id:'b_selection',label:'มีเกณฑ์การคัดเลือกพนักงานที่ชัดเจน & เป็นธรรม?',type:'toggle',opts:[
+        {v:'yes',l:'มี & บันทึกไว้',s:''},
+        {v:'partial',l:'บางส่วน',s:'warn'},
+        {v:'no',l:'ไม่มี',s:'danger'},
+      ]},
+      {id:'b_notice',label:'มีหนังสือบอกกล่าวล่วงหน้าถูกต้อง?',type:'toggle',opts:[
+        {v:'yes',l:'มี',s:''},
+        {v:'no',l:'ไม่มี',s:'danger'},
+      ]},
+      {id:'b_comp',label:'ค่าชดเชยตามกฎหมาย',type:'toggle',opts:[
+        {v:'full',l:'ครบถ้วน',s:''},
+        {v:'threshold',l:'ใกล้เปลี่ยน rate',s:'warn'},
+        {v:'under',l:'ต่ำกว่ากฎหมาย',s:'danger'},
+        {v:'none',l:'ไม่จ่าย',s:'danger'},
+      ]},
+      {id:'b_notice_pay',label:'ค่าจ้างแทนการบอกกล่าว (Notice Pay)',type:'toggle',opts:[
+        {v:'paid',l:'จ่ายครบ',s:''},
+        {v:'partial',l:'บางส่วน',s:'warn'},
+        {v:'none',l:'ไม่จ่าย',s:'danger'},
+      ]},
+      {id:'b_leave',label:'ค่าวันหยุดพักผ่อนสะสม (Unused Leave)',type:'toggle',opts:[
+        {v:'paid',l:'จ่ายครบ',s:''},
+        {v:'partial',l:'บางส่วน',s:'warn'},
+        {v:'none',l:'ไม่จ่าย',s:'danger'},
+      ]},
+      {id:'b_hearing',label:'มีการให้พนักงานรับทราบ & ชี้แจงก่อน?',type:'toggle',opts:[
+        {v:'yes',l:'ใช่ & มีบันทึก',s:''},
+        {v:'informal',l:'ไม่เป็นทางการ',s:'warn'},
+        {v:'no',l:'ไม่มี',s:'danger'},
+      ]},
+    ]
+  },
+  C:{
+    title:'C — ผลงานไม่ผ่านเกณฑ์',
+    fields:[
+      {id:'c_pip',label:'มี PIP ก่อนเลิกจ้าง',type:'toggle',opts:[
+        {v:'completed',l:'มี & เสร็จสิ้นแล้ว',s:''},
+        {v:'ongoing',l:'อยู่ระหว่าง PIP',s:'warn'},
+        {v:'none',l:'ไม่มีเลย',s:'danger'},
+      ]},
+      {id:'c_pip_sign',label:'พนักงานเซ็นรับทราบ PIP?',type:'toggle',opts:[
+        {v:'signed',l:'เซ็นรับทราบ',s:''},
+        {v:'refused_w',l:'ปฏิเสธ — มีพยาน',s:'warn'},
+        {v:'refused_nw',l:'ปฏิเสธ — ไม่มีพยาน',s:'danger'},
+        {v:'not_sent',l:'ยังไม่ได้ส่ง',s:'danger'},
+      ]},
+      {id:'c_kpi_doc',label:'หลักฐาน KPI / Appraisal Record',type:'toggle',opts:[
+        {v:'strong',l:'ครบ & แน่นหนา',s:''},
+        {v:'partial',l:'บางส่วน',s:'warn'},
+        {v:'none',l:'ไม่มี',s:'danger'},
+      ]},
+      {id:'c_warning',label:'มีหนังสือเตือนอย่างเป็นทางการ?',type:'toggle',opts:[
+        {v:'yes',l:'มี — ครบขั้นตอน',s:''},
+        {v:'verbal',l:'วาจาเท่านั้น',s:'warn'},
+        {v:'no',l:'ไม่มี',s:'danger'},
+      ]},
+      {id:'c_warn_sign',label:'พนักงานเซ็นรับทราบใบเตือน?',type:'toggle',opts:[
+        {v:'signed',l:'เซ็นรับทราบ',s:''},
+        {v:'refused_w',l:'ปฏิเสธ — มีพยาน',s:'warn'},
+        {v:'refused_nw',l:'ปฏิเสธ — ไม่มีพยาน',s:'danger'},
+        {v:'not_sent',l:'ยังไม่ได้ส่ง',s:'danger'},
+        {v:'na',l:'N/A',s:''},
+      ]},
+      {id:'c_hearing',label:'มีการให้พนักงานชี้แจงก่อนเลิกจ้าง?',type:'toggle',opts:[
+        {v:'yes',l:'ใช่ & มีบันทึก',s:''},
+        {v:'informal',l:'ไม่เป็นทางการ',s:'warn'},
+        {v:'no',l:'ไม่มี',s:'danger'},
+      ]},
+      {id:'c_comp',label:'ค่าชดเชยตามกฎหมาย',type:'toggle',opts:[
+        {v:'full',l:'ครบถ้วน',s:''},
+        {v:'threshold',l:'ใกล้เปลี่ยน rate',s:'warn'},
+        {v:'under',l:'ต่ำกว่ากฎหมาย',s:'danger'},
+        {v:'none',l:'ไม่จ่าย',s:'danger'},
+      ]},
+      {id:'c_notice_pay',label:'ค่าจ้างแทนการบอกกล่าว (Notice Pay)',type:'toggle',opts:[
+        {v:'paid',l:'จ่ายครบ',s:''},
+        {v:'partial',l:'บางส่วน',s:'warn'},
+        {v:'none',l:'ไม่จ่าย',s:'danger'},
+      ]},
+    ]
+  },
+  D:{
+    title:'D — วินัย / ความประพฤติ',
+    fields:[
+      {id:'d_severity',label:'ระดับความผิด',type:'toggle',opts:[
+        {v:'minor',l:'เล็กน้อย',s:''},
+        {v:'moderate',l:'ปานกลาง',s:'warn'},
+        {v:'serious',l:'ร้ายแรง',s:'danger'},
+        {v:'gross',l:'ร้ายแรงมาก (ไม่ต้องเตือน)',s:'danger'},
+      ]},
+      {id:'d_investigation',label:'มีการสอบสวนอย่างเป็นทางการ?',type:'toggle',opts:[
+        {v:'yes',l:'ใช่ & มีบันทึก',s:''},
+        {v:'informal',l:'ไม่เป็นทางการ',s:'warn'},
+        {v:'no',l:'ไม่มี',s:'danger'},
+      ]},
+      {id:'d_warning',label:'มีหนังสือเตือนครบขั้นตอน?',type:'toggle',opts:[
+        {v:'yes',l:'มี — ครบขั้นตอน',s:''},
+        {v:'verbal',l:'วาจาเท่านั้น',s:'warn'},
+        {v:'no',l:'ไม่มี',s:'warn'},
+        {v:'gross_na',l:'N/A (ความผิดร้ายแรงมาก)',s:''},
+      ]},
+      {id:'d_warn_sign',label:'พนักงานเซ็นรับทราบใบเตือน?',type:'toggle',opts:[
+        {v:'signed',l:'เซ็นรับทราบ',s:''},
+        {v:'refused_w',l:'ปฏิเสธ — มีพยาน',s:'warn'},
+        {v:'refused_nw',l:'ปฏิเสธ — ไม่มีพยาน',s:'danger'},
+        {v:'not_sent',l:'ยังไม่ได้ส่ง',s:'danger'},
+        {v:'na',l:'N/A',s:''},
+      ]},
+      {id:'d_hearing',label:'มีการให้พนักงานชี้แจง (Hearing)?',type:'toggle',opts:[
+        {v:'yes',l:'ใช่ & มีบันทึก',s:''},
+        {v:'informal',l:'ไม่เป็นทางการ',s:'warn'},
+        {v:'no',l:'ไม่มี',s:'danger'},
+      ]},
+      {id:'d_evidence',label:'หลักฐานความผิด',type:'toggle',opts:[
+        {v:'strong',l:'ชัดเจน & แน่นหนา',s:''},
+        {v:'partial',l:'บางส่วน',s:'warn'},
+        {v:'none',l:'ไม่มี',s:'danger'},
+      ]},
+      {id:'d_comp',label:'ค่าชดเชยตามกฎหมาย',type:'toggle',opts:[
+        {v:'exempt',l:'ยกเว้น (ผิดร้ายแรงมาก)',s:''},
+        {v:'full',l:'จ่ายครบ',s:''},
+        {v:'under',l:'ต่ำกว่ากฎหมาย',s:'danger'},
+        {v:'none_risk',l:'ไม่จ่าย (ไม่แน่ใจสิทธิ)',s:'warn'},
+      ]},
+    ]
+  },
+  E:{
+    title:'E — สัญญาสิ้นสุด / Mutual Agreement',
+    fields:[
+      {id:'e_type',label:'ประเภท',type:'toggle',opts:[
+        {v:'contract',l:'สัญญาจ้างสิ้นสุด',s:''},
+        {v:'mutual',l:'Mutual Agreement',s:''},
+      ]},
+      {id:'e_notice',label:'แจ้งให้ทราบล่วงหน้าตามกำหนด?',type:'toggle',opts:[
+        {v:'yes',l:'ใช่',s:''},
+        {v:'no',l:'ไม่ได้แจ้ง',s:'danger'},
+      ]},
+      {id:'e_mutual_letter',label:'กรณี Mutual — มีหนังสือตกลงร่วมกัน?',type:'toggle',opts:[
+        {v:'na',l:'N/A',s:''},
+        {v:'yes',l:'มี & ลงนามทั้งสองฝ่าย',s:''},
+        {v:'no',l:'ไม่มี',s:'danger'},
+      ]},
+      {id:'e_comp',label:'ค่าชดเชย / เงื่อนไขที่ตกลง',type:'toggle',opts:[
+        {v:'full',l:'ครบถ้วน & ตกลงกันได้',s:''},
+        {v:'threshold',l:'ใกล้เปลี่ยน rate',s:'warn'},
+        {v:'under',l:'ต่ำกว่ากฎหมาย',s:'danger'},
+      ]},
+      {id:'e_informed',label:'พนักงานได้รับแจ้งสิทธิครบก่อนตัดสินใจ?',type:'toggle',opts:[
+        {v:'yes',l:'ใช่ & มีบันทึก',s:''},
+        {v:'partial',l:'บางส่วน',s:'warn'},
+        {v:'no',l:'ไม่ได้แจ้ง',s:'danger'},
+      ]},
+    ]
+  }
+};
+
+function renderStep3(flow){
+  var def=FLOWS[flow];
+  var html='<div style="border-top:0.5px solid var(--border);padding-top:14px;margin-top:4px;">';
+  html+='<div class="sec-lbl" style="margin-bottom:10px;">'+def.title+'</div>';
+  html+='<div style="display:flex;flex-direction:column;gap:12px;" id="flow-fields">';
+  def.fields.forEach(function(f){
+    html+='<div class="field"><label>'+f.label+'</label>';
+    if(f.type==='toggle'){
+      html+='<div class="tg" id="tg-'+f.id+'">';
+      f.opts.forEach(function(o,i){
+        var sc=i===0?' sel':'';
+        html+='<span class="tg-btn'+sc+'" data-field="'+f.id+'" data-val="'+o.v+'" data-s="'+o.s+'" onclick="pickTg(this)">'+o.l+'</span>';
+      });
+      html+='</div>';
+      S[f.id]=f.opts[0].v;
+    }
+    html+='</div>';
+  });
+  html+='</div>';
+  html+='<button class="btn-primary" style="margin-top:14px;" onclick="assess()">ประเมิน Risk Assessment</button>';
+  html+='</div>';
+  document.getElementById('step3-container').innerHTML=html;
+}
+
+function bc(pct){return pct<=30?'#2A6040':pct<=60?'#7A6010':'#B83232';}
 
 function assess(){
-  var hardBlocked = (S.pregnant==='yes'||S.maternity==='yes'||S.military==='yes'||S.union_officer==='yes'||S.key_witness==='yes');
-  var scores = {};
-  var recs = [];
+  var hardBlocked=(S.pregnant!=='no'||S.military==='yes'||S.union==='officer'||S.whistle==='yes'||S.witness==='yes');
+  var scores={};
+  var recs=[];
+  var flags=[];
 
-  if(S.whistleblow==='yes') scores.protected=25;
-  else if(S.sick_leave==='yes'||S.disability==='yes') scores.protected=15;
-  else scores.protected=0;
+  // Base scores
+  var tenureRisk=0;
+  if(S.tenure<1) tenureRisk=0; else if(S.tenure<3) tenureRisk=4;
+  else if(S.tenure<6) tenureRisk=6; else if(S.tenure<10) tenureRisk=8;
+  else if(S.tenure<20) tenureRisk=10; else tenureRisk=14;
+  scores.tenure=tenureRisk;
 
-  var panel = document.getElementById('result-panel');
-  panel.style.display='block';
-  panel.scrollIntoView({behavior:'smooth',block:'start'});
-
-  document.getElementById('result-name').textContent = document.getElementById('empName').value||'-';
-  document.getElementById('result-pos').textContent = document.getElementById('position').value||'-';
-  document.getElementById('assess-date').textContent = new Date().toLocaleDateString('th-TH',{year:'numeric',month:'long',day:'numeric'});
-
-  if(hardBlocked){
-    var circ = document.getElementById('r-circle');
-    circ.className='r-circle lv-blocked';
-    document.getElementById('r-num').textContent='STOP';
-    document.getElementById('r-rl').textContent='';
-    document.getElementById('r-verdict').textContent='ห้ามดำเนินการเลิกจ้าง';
-    document.getElementById('r-sub').textContent='พบเงื่อนไข Hard Stop — ต้องแก้ไขก่อนทุกกรณี';
-    var fh='';
-    if(S.pregnant==='yes') fh+='<span class="flag flag-block">ตั้งครรภ์</span>';
-    if(S.maternity==='yes') fh+='<span class="flag flag-block">ลาคลอด</span>';
-    if(S.military==='yes') fh+='<span class="flag flag-block">รับราชการทหาร</span>';
-    if(S.union_officer==='yes') fh+='<span class="flag flag-block">กรรมการสหภาพ</span>';
-    if(S.key_witness==='yes') fh+='<span class="flag flag-block">Key witness</span>';
-    document.getElementById('r-flags').innerHTML=fh;
-    document.getElementById('bdown-rows').innerHTML='';
-    buildHSRecs();
-    return;
-  }
-
-  var tenure=parseInt(S.tenure)||3;
-  var age=parseInt(S.age)||40;
-
-  scores.union=0;
-  if(S.union_member==='yes') scores.union+=12;
-  if(S.union_activity==='yes') scores.union+=8;
-  if(S.union_consent==='pending') scores.union+=10;
-  scores.union=Math.min(scores.union,20);
-
-  var cs=0;
-  if(S.comp_paid==='none') cs+=15;
-  else if(S.comp_paid==='under') cs+=12;
-  else if(S.comp_paid==='near_threshold') cs+=6;
-  if(S.notice_paid==='none') cs+=8;
-  else if(S.notice_paid==='partial') cs+=4;
-  if(S.annual_leave==='none') cs+=5;
-  else if(S.annual_leave==='partial') cs+=2;
-  scores.severance=Math.min(cs,25);
-
-  var tr=0;
-  if(tenure<1) tr=0; else if(tenure<3) tr=4; else if(tenure<6) tr=6;
-  else if(tenure<10) tr=8; else if(tenure<20) tr=10; else tr=14;
-  scores.tenure=tr;
-
-  var rs=0;
-  if(S.term_reason==='restructure'&&S.restr_genuine==='no') rs+=12;
-  else if(S.term_reason==='restructure'&&S.restr_genuine==='unsure') rs+=6;
-  if(S.written_notice==='no') rs+=8;
-  if(S.reason_stated==='none') rs+=6; else if(S.reason_stated==='vague') rs+=3;
-  scores.reason=Math.min(rs,20);
-
-  var perfS=0;
-  if(S.term_reason==='performance'){
-    if(S.pip==='none') perfS+=14; else if(S.pip==='ongoing') perfS+=8;
-    if(S.pip_sign==='refused_no_witness') perfS+=8;
-    else if(S.pip_sign==='not_delivered') perfS+=8;
-    else if(S.pip_sign==='refused_witnessed') perfS+=3;
-    if(S.pip_doc==='none') perfS+=6; else if(S.pip_doc==='partial') perfS+=3;
-  }
-  scores.performance=Math.min(perfS,22);
-
-  var discS=0;
-  if(S.warning_letter==='no') discS+=10; else if(S.warning_letter==='verbal_only') discS+=5;
-  if(S.warning_sign==='refused_no_witness') discS+=8;
-  else if(S.warning_sign==='not_delivered') discS+=8;
-  else if(S.warning_sign==='refused_witnessed') discS+=3;
-  if(S.hearing==='no') discS+=7; else if(S.hearing==='informal') discS+=3;
-  if(S.documentation==='none') discS+=5; else if(S.documentation==='partial') discS+=2;
-  scores.discipline=Math.min(discS,22);
-
-  var es=0;
+  var empS=0;
   var am={cooperative:0,neutral:3,resistant:8,threatening:13,lawyer:18};
-  es+=am[S.attitude]||0;
-  if(S.prev_grievance==='pending') es+=8; else if(S.prev_grievance==='resolved') es+=3;
-  if(S.near_retire==='at') es+=8; else if(S.near_retire==='near') es+=5; else if(S.near_retire==='approaching') es+=2;
-  scores.employee=Math.min(es,20);
+  empS+=am[S.attitude]||0;
+  if(S.grievance==='pending') empS+=8; else if(S.grievance==='resolved') empS+=3;
+  if(S.age>=60) empS+=8; else if(S.age>=55) empS+=5; else if(S.age>=50) empS+=2;
+  if(S.sickleave==='yes') empS+=6;
+  if(S.disability==='yes') empS+=5;
+  scores.employee=Math.min(empS,20);
 
-  var eiS=0;
-  if(S.emp_init==='yes'){
-    if(S.emp_init_letter==='no') eiS+=10;
-    else if(S.emp_init_letter==='verbal_only') eiS+=6;
-    if(S.emp_init_informed==='no') eiS+=8;
-    else if(S.emp_init_informed==='partial') eiS+=4;
-    if(S.emp_init_witness==='no') eiS+=5;
-    if(S.emp_init_medical==='no'&&S.emp_init_reason==='illness') eiS+=6;
-    if(S.constructive==='yes') eiS+=12;
-    else if(S.constructive==='possible') eiS+=6;
+  var unionS=0;
+  if(S.union==='member') unionS=10;
+  scores.union=unionS;
+
+  var lvlS={staff:0,teamlead:2,funchead:5,csuite:8};
+  scores.level=lvlS[S.level]||0;
+
+  // Flow-specific
+  if(S.flow==='A'){
+    var as=0;
+    if(S.a_letter==='no') as+=12; else if(S.a_letter==='verbal') as+=7;
+    if(S.a_informed==='no') as+=10; else if(S.a_informed==='partial') as+=5;
+    if(S.a_witness==='no') as+=5;
+    if(S.a_medical==='no'&&S.a_reason==='illness') as+=5;
+    if(S.a_constructive==='yes') as+=14; else if(S.a_constructive==='possible') as+=7;
+    scores.flow=Math.min(as,30);
+    if(S.a_letter==='no') recs.push({c:'crit',t:'ไม่มีหนังสือแสดงความประสงค์ — ต้องให้พนักงานเขียนและลงนาม มิฉะนั้นอาจถูกอ้างว่าถูกบังคับออก'});
+    else if(S.a_letter==='verbal') recs.push({c:'warn',t:'แจ้งด้วยวาจาเท่านั้น — ให้พนักงานยืนยันเป็นลายลักษณ์อักษรหรืออย่างน้อย email ยืนยัน'});
+    if(S.a_informed==='no') recs.push({c:'crit',t:'พนักงานไม่ได้รับแจ้งสิทธิก่อนตัดสินใจ — แจ้งสิทธิค่าชดเชย ประกันสังคม และสวัสดิการให้ครบ ป้องกันการฟ้องภายหลัง'});
+    if(S.a_witness==='no') recs.push({c:'warn',t:'ไม่มีพยาน HR — ให้ HR อย่างน้อย 1 คนลงนามรับทราบในหนังสือแสดงความประสงค์'});
+    if(S.a_reason==='illness'&&S.a_medical==='no') recs.push({c:'warn',t:'กรณีป่วยหนัก — ควรมีใบรับรองแพทย์ยืนยันประกอบเพื่อรองรับสิทธิประกันสังคม'});
+    if(S.a_reason==='early_retire') recs.push({c:'warn',t:'ขอเกษียณก่อนกำหนด — ตรวจสอบนโยบาย early retirement และสิทธิค่าชดเชยพิเศษที่พนักงานควรได้'});
+    if(S.a_constructive==='yes') recs.push({c:'crit',t:'ความเสี่ยง Constructive Dismissal สูง — ถ้าพนักงานถูกกดดันให้ลาออก ศาลอาจตีความว่านายจ้างเลิกจ้าง ปรึกษาฝ่ายกฎหมายทันที'});
+    else if(S.a_constructive==='possible') recs.push({c:'warn',t:'อาจมีความเสี่ยง Constructive Dismissal — บันทึกว่าพนักงานตัดสินใจเองโดยสมัครใจ'});
   }
-  scores.emp_initiated=Math.min(eiS,18);
 
-  var fs=0;
-  var sm={staff:0,teamlead:2,funchead:5,csuite:8};
-  fs+=sm[S.salary_band]||0;
-  if(S.media_risk==='high') fs+=8; else if(S.media_risk==='med') fs+=4;
-  if(S.replacement_ready==='no') fs+=3;
-  scores.financial=Math.min(fs,15);
+  if(S.flow==='B'){
+    var bs=0;
+    if(S.b_genuine==='no') bs+=15; else if(S.b_genuine==='unsure') bs+=8;
+    if(S.b_selection==='no') bs+=8; else if(S.b_selection==='partial') bs+=4;
+    if(S.b_notice==='no') bs+=8;
+    if(S.b_comp==='none') bs+=15; else if(S.b_comp==='under') bs+=10; else if(S.b_comp==='threshold') bs+=5;
+    if(S.b_notice_pay==='none') bs+=8; else if(S.b_notice_pay==='partial') bs+=4;
+    if(S.b_leave==='none') bs+=5; else if(S.b_leave==='partial') bs+=2;
+    if(S.b_hearing==='no') bs+=6; else if(S.b_hearing==='informal') bs+=3;
+    scores.flow=Math.min(bs,40);
+    if(S.b_genuine==='no') recs.push({c:'crit',t:'ยังรับพนักงานอื่นในตำแหน่งเดิม — การ restructure จะถูกตีความว่าไม่ชอบธรรม'});
+    if(S.b_selection==='no') recs.push({c:'crit',t:'ไม่มีเกณฑ์คัดเลือก — ต้องมีเกณฑ์ที่ชัดเจน เป็นธรรม และบันทึกไว้ก่อนดำเนินการ'});
+    if(S.b_notice==='no') recs.push({c:'crit',t:'ต้องมีหนังสือบอกกล่าวล่วงหน้าเป็นลายลักษณ์อักษร'});
+    if(S.b_comp==='none') recs.push({c:'crit',t:'ไม่จ่ายค่าชดเชย — ผิดกฎหมาย ต้องจ่ายตาม พ.ร.บ.คุ้มครองแรงงาน'});
+    else if(S.b_comp==='threshold') recs.push({c:'warn',t:'ตรวจสอบว่าอายุงานอยู่ก่อน/หลัง threshold (ครบ 3/6/10/20 ปี) — rate ค่าชดเชยจะเปลี่ยน'});
+    if(S.b_notice_pay==='none') recs.push({c:'crit',t:'ต้องจ่าย Notice Pay หรือบอกกล่าวล่วงหน้าอย่างน้อย 1 รอบจ่ายค่าจ้าง'});
+    if(S.b_hearing==='no') recs.push({c:'warn',t:'ควรให้พนักงานรับทราบและมีโอกาสชี้แจงก่อน บันทึกเป็นลายลักษณ์อักษร'});
+  }
 
-  var total=Math.min(Math.round(Object.values(scores).reduce(function(a,b){return a+b;},0)),100);
+  if(S.flow==='C'){
+    var cs=0;
+    if(S.c_pip==='none') cs+=15; else if(S.c_pip==='ongoing') cs+=8;
+    if(S.c_pip_sign==='refused_nw'||S.c_pip_sign==='not_sent') cs+=8;
+    else if(S.c_pip_sign==='refused_w') cs+=3;
+    if(S.c_kpi_doc==='none') cs+=7; else if(S.c_kpi_doc==='partial') cs+=3;
+    if(S.c_warning==='no') cs+=10; else if(S.c_warning==='verbal') cs+=5;
+    if(S.c_warn_sign==='refused_nw'||S.c_warn_sign==='not_sent') cs+=8;
+    else if(S.c_warn_sign==='refused_w') cs+=3;
+    if(S.c_hearing==='no') cs+=8; else if(S.c_hearing==='informal') cs+=4;
+    if(S.c_comp==='none') cs+=15; else if(S.c_comp==='under') cs+=10; else if(S.c_comp==='threshold') cs+=5;
+    if(S.c_notice_pay==='none') cs+=8; else if(S.c_notice_pay==='partial') cs+=4;
+    scores.flow=Math.min(cs,45);
+    if(S.c_pip==='none') recs.push({c:'crit',t:'ไม่มี PIP — เสี่ยงถูกฟ้องเลิกจ้างไม่เป็นธรรมสูงมาก ต้องทำ PIP ให้ครบกระบวนการก่อน'});
+    else if(S.c_pip==='ongoing') recs.push({c:'warn',t:'PIP ยังไม่สิ้นสุด — ควรรอให้ครบกระบวนการก่อน'});
+    if(S.c_pip_sign==='refused_nw') recs.push({c:'crit',t:'พนักงานปฏิเสธเซ็น PIP โดยไม่มีพยาน — ต้องมีพยาน HR ลงนามแทนและบันทึกว่า "ปฏิเสธการเซ็น"'});
+    if(S.c_pip_sign==='not_sent') recs.push({c:'crit',t:'ยังไม่ได้ส่ง PIP ให้พนักงาน — ต้องส่งและมีหลักฐานการรับก่อน'});
+    if(S.c_kpi_doc==='none') recs.push({c:'warn',t:'ไม่มีหลักฐาน KPI — รวบรวม appraisal record, email, KPI report ก่อนดำเนินการ'});
+    if(S.c_warning==='no') recs.push({c:'crit',t:'ไม่มีหนังสือเตือน — กระบวนการทางวินัยไม่ครบ'});
+    if(S.c_warn_sign==='refused_nw') recs.push({c:'crit',t:'พนักงานปฏิเสธเซ็นใบเตือนโดยไม่มีพยาน — ให้พยาน HR ลงนามและบันทึกการปฏิเสธพร้อมวันเวลา'});
+    if(S.c_hearing==='no') recs.push({c:'crit',t:'ต้องให้พนักงานชี้แจงก่อนเลิกจ้าง บันทึกเป็นลายลักษณ์อักษร'});
+    if(S.c_comp==='none') recs.push({c:'crit',t:'ไม่จ่ายค่าชดเชย — ผิดกฎหมาย ต้องจ่ายตาม พ.ร.บ.คุ้มครองแรงงาน'});
+    if(S.c_notice_pay==='none') recs.push({c:'crit',t:'ต้องจ่าย Notice Pay หรือบอกกล่าวล่วงหน้าอย่างน้อย 1 รอบจ่ายค่าจ้าง'});
+  }
+
+  if(S.flow==='D'){
+    var ds=0;
+    if(S.d_investigation==='no') ds+=10; else if(S.d_investigation==='informal') ds+=5;
+    if(S.d_severity!=='gross'){
+      if(S.d_warning==='no') ds+=8; else if(S.d_warning==='verbal') ds+=4;
+      if(S.d_warn_sign==='refused_nw'||S.d_warn_sign==='not_sent') ds+=8;
+      else if(S.d_warn_sign==='refused_w') ds+=3;
+    }
+    if(S.d_hearing==='no') ds+=10; else if(S.d_hearing==='informal') ds+=5;
+    if(S.d_evidence==='none') ds+=10; else if(S.d_evidence==='partial') ds+=4;
+    if(S.d_comp==='under') ds+=8;
+    else if(S.d_comp==='none_risk') ds+=5;
+    scores.flow=Math.min(ds,40);
+    if(S.d_investigation==='no') recs.push({c:'crit',t:'ไม่มีการสอบสวนอย่างเป็นทางการ — ต้องตั้งคณะสอบสวนและบันทึกผลก่อนดำเนินการ'});
+    if(S.d_severity!=='gross'&&S.d_warning==='no') recs.push({c:'crit',t:'ไม่มีหนังสือเตือน — ต้องครบขั้นตอนก่อน ยกเว้นกรณีความผิดร้ายแรงมาก'});
+    if(S.d_warn_sign==='refused_nw') recs.push({c:'crit',t:'พนักงานปฏิเสธเซ็นใบเตือนโดยไม่มีพยาน — ให้พยาน HR ลงนามแทนและบันทึกวันเวลาทันที'});
+    if(S.d_hearing==='no') recs.push({c:'crit',t:'ไม่มีการให้ชี้แจง (Hearing) — เป็นสิทธิขั้นพื้นฐาน ถ้าไม่ทำเสี่ยงถูกฟ้องสูงมาก'});
+    if(S.d_evidence==='none') recs.push({c:'crit',t:'ไม่มีหลักฐานความผิด — ต้องรวบรวมก่อน การเลิกจ้างโดยไม่มีหลักฐานจะแพ้คดีแน่นอน'});
+    if(S.d_comp==='none_risk') recs.push({c:'warn',t:'ไม่แน่ใจสิทธิค่าชดเชย — ปรึกษาฝ่ายกฎหมายก่อน กรณีความผิดร้ายแรงมากตาม ม.119 เท่านั้นที่ยกเว้นได้'});
+  }
+
+  if(S.flow==='E'){
+    var es=0;
+    if(S.e_notice==='no') es+=10;
+    if(S.e_type==='mutual'&&S.e_mutual_letter==='no') es+=12;
+    if(S.e_comp==='under') es+=10; else if(S.e_comp==='threshold') es+=5;
+    if(S.e_informed==='no') es+=8; else if(S.e_informed==='partial') es+=4;
+    scores.flow=Math.min(es,25);
+    if(S.e_notice==='no') recs.push({c:'crit',t:'ต้องแจ้งล่วงหน้าตามที่กำหนดในสัญญาหรือ พ.ร.บ.คุ้มครองแรงงาน'});
+    if(S.e_type==='mutual'&&S.e_mutual_letter==='no') recs.push({c:'crit',t:'Mutual Agreement ต้องมีหนังสือและลงนามทั้งสองฝ่าย เพื่อป้องกันการกลับมาอ้างภายหลัง'});
+    if(S.e_comp==='under') recs.push({c:'crit',t:'เงื่อนไขต่ำกว่ากฎหมาย — แม้เป็น mutual ก็ต้องไม่ต่ำกว่าสิทธิขั้นต่ำตาม พ.ร.บ.'});
+    if(S.e_informed==='no') recs.push({c:'warn',t:'พนักงานไม่ได้รับแจ้งสิทธิครบ — แจ้งให้ครบก่อนลงนามเพื่อป้องกันการโต้แย้งภายหลัง'});
+  }
+
+  // Shared recs
+  if(S.grievance==='pending') recs.push({c:'crit',t:'มี grievance ค้างอยู่ — ต้องแก้ไขก่อน การเลิกจ้างขณะ grievance ค้างเสี่ยงถูกมองว่าเป็น retaliation'});
+  if(S.attitude==='lawyer') recs.push({c:'crit',t:'พนักงานติดต่อทนายแล้ว — บันทึกทุก communication และปรึกษาฝ่ายกฎหมายก่อนดำเนินการต่อ'});
+  else if(S.attitude==='threatening') recs.push({c:'warn',t:'พนักงานขู่ฟ้อง — มี HR witness ทุก session ไม่สื่อสารผ่าน Line ส่วนตัว'});
+  if(S.union==='member') recs.push({c:'warn',t:'สมาชิกสหภาพ — ตรวจสอบข้อตกลงสหภาพ (CBA) ว่ามีกระบวนการพิเศษหรือไม่'});
+  if(S.sickleave==='yes') recs.push({c:'warn',t:'อยู่ระหว่างลาป่วย — ระวังการเลิกจ้างในช่วงนี้จะถูกมองว่าเลือกปฏิบัติ'});
+  if(S.age>=55) recs.push({c:'warn',t:'พนักงานอายุ '+S.age+' ปี — พิจารณา transition support หรือ extended notice period'});
+  if(S.tenure>=20) flags.push({t:'อายุงาน 20+ ปี',c:'flag-warn'});
+
+  if(recs.length===0) recs.push({c:'ok',t:'ไม่พบ gap สำคัญ — ตรวจ checklist สุดท้ายและเตรียมเอกสารให้ครบก่อนวันแจ้ง'});
+
+  var total=Object.values(scores).reduce(function(a,b){return a+b;},0);
+  total=Math.min(Math.round(total),100);
 
   var lv,sub,cc;
-  if(total<=20){lv='ความเสี่ยงต่ำ';sub='ดำเนินการได้ — ตรวจ checklist สุดท้าย';cc='lv-low';}
+  if(hardBlocked){lv='ห้ามดำเนินการ';sub='พบ Hard Stop — ต้องแก้ไขก่อนทุกกรณี';cc='lv-blocked';total=0;}
+  else if(total<=20){lv='ความเสี่ยงต่ำ';sub='ดำเนินการได้ — ตรวจ checklist สุดท้าย';cc='lv-low';}
   else if(total<=45){lv='ความเสี่ยงปานกลาง';sub='ควรปิด gap บางจุดก่อนดำเนินการ';cc='lv-med';}
   else if(total<=70){lv='ความเสี่ยงสูง';sub='ต้องแก้ไขก่อนดำเนินการ — ปรึกษากฎหมาย';cc='lv-high';}
   else{lv='ความเสี่ยงวิกฤต';sub='หยุดดำเนินการชั่วคราว — ปรึกษากฎหมายทันที';cc='lv-crit';}
 
   var circ=document.getElementById('r-circle');
   circ.className='r-circle '+cc;
-  document.getElementById('r-num').textContent=total;
-  document.getElementById('r-rl').textContent='/ 100';
+  document.getElementById('r-num').textContent=hardBlocked?'STOP':total;
+  document.getElementById('r-rl').textContent=hardBlocked?'':' / 100';
   document.getElementById('r-verdict').textContent=lv;
   document.getElementById('r-sub').textContent=sub;
 
   var fh='';
-  if(S.whistleblow==='yes') fh+='<span class="flag flag-block">Whistleblower</span>';
-  if(S.union_member==='yes') fh+='<span class="flag flag-crit">Union member</span>';
-  if(S.union_activity==='yes') fh+='<span class="flag flag-crit">Union activist</span>';
+  if(S.pregnant!=='no') fh+='<span class="flag flag-block">'+( S.pregnant==='pregnant'?'ตั้งครรภ์':'ลาคลอด')+'</span>';
+  if(S.military==='yes') fh+='<span class="flag flag-block">รับราชการทหาร</span>';
+  if(S.union==='officer') fh+='<span class="flag flag-block">กรรมการสหภาพ</span>';
+  if(S.whistle==='yes') fh+='<span class="flag flag-block">Whistleblower</span>';
+  if(S.witness==='yes') fh+='<span class="flag flag-block">Key witness</span>';
+  if(S.union==='member') fh+='<span class="flag flag-warn">Union member</span>';
   if(S.attitude==='lawyer') fh+='<span class="flag flag-crit">ติดต่อทนาย</span>';
   if(S.attitude==='threatening') fh+='<span class="flag flag-warn">ขู่ฟ้อง</span>';
-  if(S.near_retire==='at'||S.near_retire==='near') fh+='<span class="flag flag-warn">ใกล้เกษียณ</span>';
-  if(S.comp_paid==='none') fh+='<span class="flag flag-crit">ไม่จ่ายชดเชย</span>';
-  if(S.pip==='none'&&S.term_reason==='performance') fh+='<span class="flag flag-crit">ไม่มี PIP</span>';
-  if((S.pip_sign==='refused_no_witness'||S.pip_sign==='not_delivered')&&S.term_reason==='performance') fh+='<span class="flag flag-crit">PIP ไม่มีพยาน</span>';
-  if(S.warning_sign==='refused_no_witness'||S.warning_sign==='not_delivered') fh+='<span class="flag flag-crit">ใบเตือนไม่มีพยาน</span>';
-  if(tenure>=20) fh+='<span class="flag flag-warn">อายุงาน 20+ ปี</span>';
-  if(S.constructive==='yes') fh+='<span class="flag flag-crit">Constructive Dismissal</span>';
-  if(S.emp_init==='yes'&&S.emp_init_letter==='no') fh+='<span class="flag flag-warn">ไม่มีหนังสือลาออก</span>';
+  if(S.grievance==='pending') fh+='<span class="flag flag-crit">Grievance ค้าง</span>';
+  if(S.tenure>=20) fh+='<span class="flag flag-warn">อายุงาน 20+ ปี</span>';
+  if(S.age>=55) fh+='<span class="flag flag-warn">ใกล้เกษียณ</span>';
   document.getElementById('r-flags').innerHTML=fh;
 
+  var flowLabel={A:'การพ้นงานตามประสงค์พนักงาน',B:'Restructure & ค่าชดเชย',C:'Performance & กระบวนการ',D:'วินัย & การสอบสวน',E:'สัญญา / Mutual'};
   var bItems=[
-    {label:'กลุ่มคุ้มครอง & whistleblow',score:scores.protected,max:25},
-    {label:'สหภาพแรงงาน',score:scores.union,max:20},
-    {label:'ค่าชดเชย & สิทธิทางการเงิน',score:scores.severance,max:25},
     {label:'อายุงาน',score:scores.tenure,max:14},
-    {label:'เหตุผล & กระบวนการแจ้ง',score:scores.reason,max:20},
-    {label:'กระบวนการ Performance & PIP',score:scores.performance,max:22},
-    {label:'กระบวนการวินัย & การชี้แจง',score:scores.discipline,max:22},
+    {label:'ระดับตำแหน่ง',score:scores.level,max:8},
+    {label:'สหภาพแรงงาน',score:scores.union,max:10},
     {label:'ทัศนคติ & grievance',score:scores.employee,max:20},
-    {label:'การพ้นงานตามประสงค์พนักงาน',score:scores.emp_initiated,max:18},
-    {label:'ชื่อเสียง & ระดับตำแหน่ง',score:scores.financial,max:15},
+    {label:flowLabel[S.flow]||'Flow-specific',score:scores.flow||0,max:45},
   ];
   var bh='';
   bItems.forEach(function(b){
@@ -946,63 +779,29 @@ function assess(){
     bh+='<div class="brow"><span class="brow-lbl">'+b.label+'</span><div class="brow-bg"><div class="brow-fill" style="width:'+pct+'%;background:'+clr+'"></div></div><span class="brow-sc" style="color:'+clr+'">'+b.score+'/'+b.max+'</span></div>';
   });
   document.getElementById('bdown-rows').innerHTML=bh;
-  buildRecs();
-}
 
-function buildHSRecs(){
-  var r=[];
-  if(S.pregnant==='yes'||S.maternity==='yes') r.push({c:'block',t:'ห้ามเลิกจ้างพนักงานตั้งครรภ์หรืออยู่ระหว่างลาคลอดโดยเด็ดขาด — ผิดมาตรา 43 พ.ร.บ.คุ้มครองแรงงาน โทษจำคุก 6 เดือน–1 ปี หรือปรับสูงสุด 200,000 บาท'});
-  if(S.military==='yes') r.push({c:'block',t:'รอให้พนักงานกลับจากราชการทหารก่อน — ต้องรับกลับเข้าทำงานภายใน 30 วันหลังปลดประจำการ'});
-  if(S.union_officer==='yes') r.push({c:'block',t:'กรรมการสหภาพแรงงาน — ต้องยื่นคำร้องต่อศาลแรงงานและได้รับอนุญาตก่อนเลิกจ้าง (มาตรา 52 พ.ร.บ.แรงงานสัมพันธ์)'});
-  if(S.whistleblow==='yes') r.push({c:'block',t:'Retaliation ต่อ whistleblower ผิดกฎหมายคุ้มครองผู้แจ้งเบาะแส — ปรึกษาฝ่ายกฎหมายและ Compliance ก่อนทุกกรณี'});
-  if(S.key_witness==='yes') r.push({c:'block',t:'พนักงานเป็น key witness — การเลิกจ้างอาจถูกตีความว่า obstruction of justice ปรึกษาทนายก่อน'});
-  document.getElementById('rec-items').innerHTML=r.map(function(x){return '<div class="rec '+x.c+'">'+x.t+'</div>';}).join('');
-}
-
-function buildRecs(){
-  var r=[];
-  if(S.comp_paid==='none') r.push({c:'crit',t:'จ่ายค่าชดเชยให้ถูกต้องตาม พ.ร.บ.คุ้มครองแรงงาน — ไม่จ่ายถือเป็นความผิดอาญา'});
-  else if(S.comp_paid==='under') r.push({c:'crit',t:'ค่าชดเชยต่ำกว่ากฎหมาย — คำนวณใหม่ให้ครบก่อนดำเนินการ'});
-  else if(S.comp_paid==='near_threshold') r.push({c:'warn',t:'ตรวจสอบว่าอายุงานอยู่ก่อน/หลัง threshold (ครบ 3/6/10/20 ปี) — rate ค่าชดเชยจะเปลี่ยน'});
-  if(S.notice_paid==='none') r.push({c:'crit',t:'ต้องจ่ายค่าจ้างแทนการบอกกล่าว (notice pay) — หรือบอกกล่าวล่วงหน้าอย่างน้อย 1 รอบจ่ายค่าจ้าง'});
-  if(S.annual_leave==='none') r.push({c:'warn',t:'จ่ายค่าวันหยุดพักผ่อนสะสมที่ยังไม่ได้ใช้ให้ครบก่อนออกหนังสือเลิกจ้าง'});
-  if(S.term_reason==='performance'&&S.pip==='none') r.push({c:'crit',t:'ไม่มี PIP — เสี่ยงถูกฟ้องเลิกจ้างไม่เป็นธรรมสูงมาก ต้องทำ PIP ให้ครบกระบวนการก่อน'});
-  else if(S.pip==='ongoing') r.push({c:'warn',t:'PIP ยังไม่สิ้นสุด — ควรรอให้ครบกระบวนการก่อน เว้นแต่มีเหตุอื่นประกอบ'});
-  if(S.term_reason==='performance'&&S.pip_sign==='refused_no_witness') r.push({c:'crit',t:'พนักงานปฏิเสธเซ็น PIP โดยไม่มีพยาน — เอกสารอาจถูกโต้แย้งในศาลได้ง่าย ต้องมีพยานลงนามแทนและบันทึกว่า "ปฏิเสธการเซ็น"'});
-  if(S.term_reason==='performance'&&S.pip_sign==='not_delivered') r.push({c:'crit',t:'ยังไม่ได้ส่ง PIP ให้พนักงาน — ต้องส่งและมีหลักฐานการรับก่อนดำเนินการ'});
-  if(S.term_reason==='performance'&&S.pip_doc==='none') r.push({c:'warn',t:'ไม่มีหลักฐาน KPI / appraisal record ประกอบ PIP — รวบรวมให้ครบก่อน'});
-  if(S.warning_letter==='no') r.push({c:'crit',t:'ไม่มีหนังสือเตือน — กระบวนการทางวินัยไม่ครบ เสี่ยงถูกฟ้องเลิกจ้างไม่เป็นธรรม'});
-  if(S.warning_sign==='refused_no_witness') r.push({c:'crit',t:'พนักงานปฏิเสธเซ็นใบเตือนโดยไม่มีพยาน — ให้พยาน HR อย่างน้อย 1 คนลงนาม และบันทึกว่า "พนักงานปฏิเสธการรับทราบ" พร้อมวันเวลา'});
-  if(S.warning_sign==='not_delivered') r.push({c:'crit',t:'ยังไม่ได้ส่งใบเตือนให้พนักงาน — ต้องส่งพร้อมมีหลักฐานการรับหรือพยานก่อนดำเนินการต่อ'});
-  if(S.warning_sign==='refused_witnessed') r.push({c:'warn',t:'พนักงานปฏิเสธเซ็นใบเตือน แต่มีพยาน — เอกสารใช้ได้ตามกฎหมาย แต่ควรระบุชื่อพยานและวันที่ให้ครบถ้วน'});
-  if(S.hearing==='no') r.push({c:'crit',t:'ไม่มีการให้พนักงานชี้แจง — เป็นสิทธิขั้นพื้นฐานที่ต้องดำเนินการและบันทึกเป็นลายลักษณ์อักษร'});
-  if(S.documentation==='none') r.push({c:'warn',t:'ไม่มีหลักฐานเอกสาร — รวบรวม KPI record, email, warning letter ก่อนดำเนินการ'});
-  if(S.term_reason==='restructure'&&S.restr_genuine==='no') r.push({c:'crit',t:'ยังรับพนักงานคนอื่นในตำแหน่งเดิม — การ restructure จะถูกตีความว่าไม่ชอบธรรม'});
-  if(S.written_notice==='no') r.push({c:'crit',t:'ต้องมีหนังสือบอกกล่าวล่วงหน้าเป็นลายลักษณ์อักษรและระบุเหตุผลชัดเจน'});
-  if(S.union_member==='yes') r.push({c:'warn',t:'สมาชิกสหภาพ — ตรวจสอบข้อตกลงสหภาพ (CBA) ว่ามีกระบวนการพิเศษหรือไม่'});
-  if(S.union_consent==='pending') r.push({c:'crit',t:'ต้องขอความเห็นชอบสหภาพแรงงานก่อนดำเนินการ — ข้ามขั้นตอนนี้เสี่ยงถูกฟ้องละเมิด CBA'});
-  if(S.attitude==='lawyer') r.push({c:'crit',t:'พนักงานติดต่อทนายแล้ว — บันทึกทุก communication ปรึกษาฝ่ายกฎหมาย และพิจารณา mutual termination agreement'});
-  else if(S.attitude==='threatening') r.push({c:'warn',t:'พนักงานขู่ฟ้อง — มี HR witness ทุก session บันทึกเป็นลายลักษณ์อักษร ไม่สื่อสารผ่าน Line ส่วนตัว'});
-  if(S.prev_grievance==='pending') r.push({c:'crit',t:'มี grievance ค้างอยู่ — ต้องแก้ไขหรือปิดก่อน การเลิกจ้างขณะ grievance ค้างเสี่ยงถูกมองว่าเป็น retaliation'});
-  if(S.sick_leave==='yes') r.push({c:'warn',t:'อยู่ระหว่างลาป่วย — ตรวจสอบใบรับรองแพทย์ และระวังการเลิกจ้างในช่วงนี้จะถูกมองว่าเลือกปฏิบัติ'});
-  if(S.near_retire==='at'||S.near_retire==='near') r.push({c:'warn',t:'ใกล้เกษียณ — ตรวจสอบนโยบาย early retirement และพิจารณา negotiate package พิเศษ'});
-  if(S.media_risk==='high') r.push({c:'warn',t:'ความเสี่ยงด้านสื่อสูง — เตรียม communication plan และ media response ก่อนดำเนินการ'});
-  if(S.emp_init==='yes'){
-    if(S.emp_init_letter==='no') r.push({c:'crit',t:'ไม่มีหนังสือแสดงความประสงค์เป็นลายลักษณ์อักษร — ต้องให้พนักงานเขียนและลงนามก่อน มิฉะนั้นอาจถูกอ้างในภายหลังว่าถูกบังคับออก'});
-    else if(S.emp_init_letter==='verbal_only') r.push({c:'warn',t:'แจ้งด้วยวาจาเท่านั้น — ควรให้พนักงานยืนยันเป็นลายลักษณ์อักษรหรืออย่างน้อยส่ง email ยืนยัน'});
-    if(S.emp_init_informed==='no') r.push({c:'crit',t:'พนักงานไม่ได้รับแจ้งสิทธิก่อนตัดสินใจ — แจ้งสิทธิค่าชดเชย, สิทธิประกันสังคม และสวัสดิการที่เกี่ยวข้องให้ครบก่อน ป้องกันการกลับมาฟ้องภายหลัง'});
-    else if(S.emp_init_informed==='partial') r.push({c:'warn',t:'แจ้งสิทธิพนักงานไม่ครบ — ตรวจสอบและแจ้งเพิ่มเติมให้ครบถ้วน บันทึกเป็นลายลักษณ์อักษร'});
-    if(S.emp_init_witness==='no') r.push({c:'warn',t:'ไม่มีพยาน HR รับทราบ — ควรให้ HR อย่างน้อย 1 คนลงนามรับทราบในหนังสือแสดงความประสงค์'});
-    if(S.emp_init_reason==='illness'&&S.emp_init_medical==='no') r.push({c:'warn',t:'กรณีป่วยหนัก — ควรมีใบรับรองแพทย์ยืนยันประกอบ เพื่อรองรับสิทธิประกันสังคมและป้องกันข้อพิพาทในภายหลัง'});
-    if(S.emp_init_reason==='early_retire') r.push({c:'warn',t:'ขอเกษียณก่อนกำหนด — ตรวจสอบนโยบาย early retirement และสิทธิค่าชดเชยพิเศษที่พนักงานควรได้รับ'});
-    if(S.constructive==='yes') r.push({c:'crit',t:'ความเสี่ยง Constructive Dismissal สูง — ถ้าพนักงานถูกกดดันให้ลาออก ศาลแรงงานอาจตีความว่าเป็นการเลิกจ้างโดยนายจ้าง ปรึกษาฝ่ายกฎหมายก่อนดำเนินการ'});
-    else if(S.constructive==='possible') r.push({c:'warn',t:'อาจมีความเสี่ยง Constructive Dismissal — บันทึกว่าพนักงานตัดสินใจเองโดยสมัครใจ และไม่มีการเปลี่ยนแปลงสภาพการจ้างก่อนหน้า'});
+  if(hardBlocked){
+    var hr=[];
+    if(S.pregnant==='pregnant'||S.pregnant==='maternity') hr.push({c:'block',t:'ห้ามเลิกจ้างพนักงานตั้งครรภ์หรืออยู่ระหว่างลาคลอด — ผิดมาตรา 43 พ.ร.บ.คุ้มครองแรงงาน โทษจำคุก 6 เดือน–1 ปี หรือปรับสูงสุด 200,000 บาท'});
+    if(S.military==='yes') hr.push({c:'block',t:'รอให้พนักงานกลับจากราชการทหารก่อน — ต้องรับกลับเข้าทำงานภายใน 30 วันหลังปลดประจำการ'});
+    if(S.union==='officer') hr.push({c:'block',t:'กรรมการสหภาพ — ต้องยื่นคำร้องต่อศาลแรงงานและได้รับอนุญาตก่อน (ม.52 พ.ร.บ.แรงงานสัมพันธ์)'});
+    if(S.whistle==='yes') hr.push({c:'block',t:'Whistleblower — ปรึกษา Compliance และฝ่ายกฎหมายก่อนทุกกรณี เสี่ยง retaliation สูงมาก'});
+    if(S.witness==='yes') hr.push({c:'block',t:'Key witness — ปรึกษาทนายก่อน การเลิกจ้างอาจถูกมองว่า obstruction of justice'});
+    document.getElementById('rec-items').innerHTML=hr.map(function(x){return '<div class="rec '+x.c+'">'+x.t+'</div>';}).join('');
+  } else {
+    document.getElementById('rec-items').innerHTML=recs.map(function(x){return '<div class="rec '+x.c+'">'+x.t+'</div>';}).join('');
   }
-  if(r.length===0) r.push({c:'ok',t:'ไม่พบ gap สำคัญ — ตรวจ checklist สุดท้ายและเตรียมเอกสารให้ครบก่อนวันแจ้ง'});
-  document.getElementById('rec-items').innerHTML=r.map(function(x){return '<div class="rec '+x.c+'">'+x.t+'</div>';}).join('');
+
+  document.getElementById('r-date').textContent=new Date().toLocaleDateString('th-TH',{year:'numeric',month:'long',day:'numeric'});
+  document.getElementById('r-name').textContent=document.getElementById('empName').value||'-';
+  document.getElementById('r-pos').textContent=document.getElementById('position').value||'-';
+
+  var rp=document.getElementById('result-panel');
+  rp.style.display='block';
+  document.getElementById('print-btn').style.display='block';
+  rp.scrollIntoView({behavior:'smooth',block:'start'});
 }
 
-initUI();
 checkHS();
 </script>
 </body>
