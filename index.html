@@ -523,7 +523,7 @@ var SECTIONS = [
         {v:'mutual',l:'Mutual Agreement'},
         {v:'redundancy',l:'ลดจำนวนพนักงาน (Redundancy)'},
       ]},
-      {id:'restr_genuine',label:'Restructure — ไม่รับคนแทนตำแหน่งเดิมจริง?',type:'toggle',opts:[
+      {id:'restr_genuine',label:'ไม่รับพนักงานคนอื่นมาทดแทนตำแหน่งนี้จริง?',type:'toggle',conditional:'restructure',opts:[
         {v:'yes',l:'ยืนยันว่าไม่รับแทน',s:''},
         {v:'unsure',l:'ไม่แน่ใจ',s:'warn'},
         {v:'no',l:'ยังรับคนอื่นแทน',s:'danger'},
@@ -540,27 +540,54 @@ var SECTIONS = [
     ]
   },
   {
-    id:'process', num:'05',
-    title:'กระบวนการ Performance & วินัย',
+    id:'performance', num:'05',
+    title:'กระบวนการ Performance (กรณีผลงานไม่ผ่าน)',
     badge:'สูง', badgeClass:'badge-high',
     fields:[
-      {id:'pip',label:'มี PIP ก่อนเลิกจ้าง (กรณีผลงานไม่ผ่าน)',type:'toggle',opts:[
+      {id:'pip',label:'มี PIP ก่อนเลิกจ้าง',type:'toggle',opts:[
         {v:'completed',l:'มี & เสร็จสิ้นแล้ว',s:''},
         {v:'ongoing',l:'อยู่ระหว่าง PIP',s:'warn'},
         {v:'none',l:'ไม่มีเลย',s:'danger'},
         {v:'na',l:'N/A (ไม่ใช่เหตุผลงาน)',s:''},
       ]},
+      {id:'pip_sign',label:'พนักงานเซ็นรับทราบ PIP?',type:'toggle',opts:[
+        {v:'signed',l:'เซ็นรับทราบ',s:''},
+        {v:'refused_witnessed',l:'ปฏิเสธเซ็น — มีพยาน & บันทึก',s:'warn'},
+        {v:'refused_no_witness',l:'ปฏิเสธเซ็น — ไม่มีพยาน',s:'danger'},
+        {v:'not_delivered',l:'ยังไม่ได้ส่งให้',s:'danger'},
+        {v:'na',l:'N/A',s:''},
+      ]},
+      {id:'pip_doc',label:'หลักฐาน KPI / appraisal record ประกอบ',type:'toggle',opts:[
+        {v:'strong',l:'ครบ & แน่นหนา',s:''},
+        {v:'partial',l:'บางส่วน',s:'warn'},
+        {v:'none',l:'ไม่มีเลย',s:'danger'},
+        {v:'na',l:'N/A',s:''},
+      ]},
+    ]
+  },
+  {
+    id:'discipline', num:'06',
+    title:'กระบวนการวินัย & การชี้แจง',
+    badge:'สูง', badgeClass:'badge-high',
+    fields:[
       {id:'warning_letter',label:'มีหนังสือเตือนอย่างเป็นทางการ?',type:'toggle',opts:[
         {v:'yes',l:'มี — ครบขั้นตอน',s:''},
         {v:'verbal_only',l:'เตือนวาจาเท่านั้น',s:'warn'},
         {v:'no',l:'ไม่มีเลย',s:'danger'},
+      ]},
+      {id:'warning_sign',label:'พนักงานเซ็นรับทราบใบเตือน?',type:'toggle',opts:[
+        {v:'signed',l:'เซ็นรับทราบ',s:''},
+        {v:'refused_witnessed',l:'ปฏิเสธเซ็น — มีพยาน & บันทึก',s:'warn'},
+        {v:'refused_no_witness',l:'ปฏิเสธเซ็น — ไม่มีพยาน',s:'danger'},
+        {v:'not_delivered',l:'ยังไม่ได้ส่งให้',s:'danger'},
+        {v:'na',l:'N/A (ไม่มีใบเตือน)',s:''},
       ]},
       {id:'hearing',label:'มีการให้พนักงานชี้แจงก่อนเลิกจ้าง?',type:'toggle',opts:[
         {v:'yes',l:'ใช่ & มีบันทึก',s:''},
         {v:'informal',l:'ไม่เป็นทางการ',s:'warn'},
         {v:'no',l:'ไม่มี',s:'danger'},
       ]},
-      {id:'documentation',label:'หลักฐาน / เอกสารประกอบ',type:'toggle',opts:[
+      {id:'documentation',label:'หลักฐาน / เอกสารประกอบโดยรวม',type:'toggle',opts:[
         {v:'strong',l:'ครบ & แน่นหนา',s:''},
         {v:'partial',l:'บางส่วน',s:'warn'},
         {v:'none',l:'ไม่มีเลย',s:'danger'},
@@ -568,7 +595,7 @@ var SECTIONS = [
     ]
   },
   {
-    id:'employee', num:'06',
+    id:'employee', num:'07',
     title:'ข้อมูลพนักงานและทัศนคติ',
     badge:'ปานกลาง', badgeClass:'badge-med',
     fields:[
@@ -584,7 +611,7 @@ var SECTIONS = [
         {v:'resolved',l:'เคย & แก้ไขแล้ว',s:'warn'},
         {v:'pending',l:'เคย & ยังค้างอยู่',s:'danger'},
       ]},
-      {id:'near_retire',label:'อายุใกล้เกษียณ (เกณฑ์ AWC = 60 ปี)',type:'toggle',opts:[
+      {id:'near_retire',label:'อายุใกล้เกษียณ (เกณฑ์ 60 ปี)',type:'toggle',opts:[
         {v:'no',l:'ต่ำกว่า 50 ปี',s:''},
         {v:'approaching',l:'50–54 ปี',s:'warn'},
         {v:'near',l:'55–59 ปี',s:'warn'},
@@ -597,16 +624,60 @@ var SECTIONS = [
     ]
   },
   {
-    id:'financial', num:'07',
+    id:'employee_initiated', num:'08',
+    title:'การพ้นงานตามความประสงค์พนักงาน',
+    badge:'ปานกลาง', badgeClass:'badge-med',
+    fields:[
+      {id:'emp_init',label:'พนักงานเป็นฝ่ายร้องขอพ้นงานเอง?',type:'toggle',opts:[
+        {v:'no',l:'ไม่ใช่ — นายจ้างเป็นฝ่ายเลิกจ้าง',s:''},
+        {v:'yes',l:'ใช่ — พนักงานร้องขอเอง',s:''},
+      ]},
+      {id:'emp_init_reason',label:'เหตุผลที่พนักงานร้องขอ',type:'toggle',opts:[
+        {v:'na',l:'N/A',s:''},
+        {v:'resign',l:'ลาออกด้วยตัวเอง',s:''},
+        {v:'illness',l:'ป่วยหนัก / ทุพพลภาพทำงานไม่ได้',s:'warn'},
+        {v:'early_retire',l:'ขอเกษียณก่อนกำหนด',s:''},
+        {v:'mutual',l:'Mutual Agreement (พนักงานเริ่มก่อน)',s:''},
+      ]},
+      {id:'emp_init_letter',label:'มีหนังสือแสดงความประสงค์เป็นลายลักษณ์อักษร?',type:'toggle',opts:[
+        {v:'na',l:'N/A',s:''},
+        {v:'yes',l:'มี & ลงนามแล้ว',s:''},
+        {v:'verbal_only',l:'แจ้งด้วยวาจาเท่านั้น',s:'warn'},
+        {v:'no',l:'ไม่มี',s:'danger'},
+      ]},
+      {id:'emp_init_medical',label:'กรณีป่วย — มีใบรับรองแพทย์ยืนยัน?',type:'toggle',opts:[
+        {v:'na',l:'N/A (ไม่ใช่กรณีป่วย)',s:''},
+        {v:'yes',l:'มี',s:''},
+        {v:'no',l:'ไม่มี',s:'warn'},
+      ]},
+      {id:'emp_init_informed',label:'พนักงานได้รับแจ้งสิทธิครบถ้วนก่อนตัดสินใจ?',type:'toggle',opts:[
+        {v:'na',l:'N/A',s:''},
+        {v:'yes',l:'ใช่ & มีบันทึก',s:''},
+        {v:'partial',l:'บางส่วน',s:'warn'},
+        {v:'no',l:'ไม่ได้แจ้ง',s:'danger'},
+      ]},
+      {id:'emp_init_witness',label:'มีพยาน HR รับทราบและบันทึกไว้?',type:'toggle',opts:[
+        {v:'na',l:'N/A',s:''},
+        {v:'yes',l:'มี',s:''},
+        {v:'no',l:'ไม่มี',s:'warn'},
+      ]},
+      {id:'constructive',label:'มีความเสี่ยงว่าพนักงานถูกกดดันให้ลาออก (Constructive Dismissal)?',type:'toggle',opts:[
+        {v:'no',l:'ไม่มี',s:''},
+        {v:'possible',l:'อาจเป็นไปได้',s:'warn'},
+        {v:'yes',l:'มีความเสี่ยงสูง',s:'danger'},
+      ]},
+    ]
+  },
+  {
+    id:'financial', num:'09',
     title:'ความเสี่ยงด้านชื่อเสียงและการเงิน',
     badge:'ปานกลาง', badgeClass:'badge-med',
     fields:[
       {id:'salary_band',label:'ระดับตำแหน่ง',type:'select',opts:[
-        {v:'frontline',l:'Frontline / ปฏิบัติการ'},
-        {v:'supervisor',l:'Supervisor / Team Lead'},
-        {v:'manager',l:'Manager'},
-        {v:'senior',l:'Senior Manager / AGM'},
-        {v:'executive',l:'Director / C-Suite'},
+        {v:'staff',l:'พนักงาน / เจ้าหน้าที่ (Staff)'},
+        {v:'teamlead',l:'หัวหน้าทีม (Team Lead)'},
+        {v:'funchead',l:'ผู้จัดการฝ่าย / หัวหน้าหน่วยงาน (Function Head)'},
+        {v:'csuite',l:'ผู้บริหารระดับสูง (C-Suite)'},
       ]},
       {id:'media_risk',label:'ความเสี่ยงด้านสื่อ / สาธารณะ',type:'toggle',opts:[
         {v:'low',l:'ต่ำ',s:''},
@@ -622,6 +693,15 @@ var SECTIONS = [
   },
 ];
 
+function updateConditionals(){
+  var allFields = [];
+  SECTIONS.forEach(function(sec){ sec.fields.forEach(function(f){ if(f.conditional) allFields.push(f); }); });
+  allFields.forEach(function(f){
+    var wrap = document.getElementById('field-wrap-'+f.id);
+    if(wrap){ wrap.style.display = (S.term_reason===f.conditional) ? 'flex' : 'none'; }
+  });
+}
+
 function initUI(){
   var html='';
   SECTIONS.forEach(function(sec,idx){
@@ -634,7 +714,9 @@ function initUI(){
     html += '</div>';
     html += '<div class="sec-body" id="body-'+sec.id+'">';
     sec.fields.forEach(function(f){
-      html += '<div class="field"><label>'+f.label+'</label>';
+      var condShow = !f.conditional || S.term_reason === f.conditional;
+      html += '<div class="field" id="field-wrap-'+f.id+'" style="'+(condShow?'':'display:none')+'">';
+      html += '<label>'+f.label+'</label>';
       if(f.type==='toggle'){
         html += '<div class="tg" id="tg-'+f.id+'">';
         f.opts.forEach(function(o,i){
@@ -644,7 +726,8 @@ function initUI(){
         html += '</div>';
         S[f.id] = f.opts[0].v;
       } else if(f.type==='select'){
-        html += '<select id="sel-'+f.id+'" onchange="S[\''+f.id+'\']=this.value;checkHS();">';
+        var oc = "S[\'" + f.id + "\' ]=this.value;checkHS();" + (f.id==='term_reason'?'updateConditionals();':'');
+        html += '<select id="sel-'+f.id+'" onchange="'+oc+'">'+'';
         f.opts.forEach(function(o){ html += '<option value="'+o.v+'">'+o.l+'</option>'; });
         html += '</select>';
         S[f.id] = f.opts[0].v;
@@ -767,14 +850,24 @@ function assess(){
   if(S.reason_stated==='none') rs+=6; else if(S.reason_stated==='vague') rs+=3;
   scores.reason=Math.min(rs,20);
 
-  var ps=0;
+  var perfS=0;
   if(S.term_reason==='performance'){
-    if(S.pip==='none') ps+=12; else if(S.pip==='ongoing') ps+=7;
+    if(S.pip==='none') perfS+=14; else if(S.pip==='ongoing') perfS+=8;
+    if(S.pip_sign==='refused_no_witness') perfS+=8;
+    else if(S.pip_sign==='not_delivered') perfS+=8;
+    else if(S.pip_sign==='refused_witnessed') perfS+=3;
+    if(S.pip_doc==='none') perfS+=6; else if(S.pip_doc==='partial') perfS+=3;
   }
-  if(S.warning_letter==='no') ps+=8; else if(S.warning_letter==='verbal_only') ps+=4;
-  if(S.hearing==='no') ps+=6; else if(S.hearing==='informal') ps+=3;
-  if(S.documentation==='none') ps+=5; else if(S.documentation==='partial') ps+=2;
-  scores.process=Math.min(ps,20);
+  scores.performance=Math.min(perfS,22);
+
+  var discS=0;
+  if(S.warning_letter==='no') discS+=10; else if(S.warning_letter==='verbal_only') discS+=5;
+  if(S.warning_sign==='refused_no_witness') discS+=8;
+  else if(S.warning_sign==='not_delivered') discS+=8;
+  else if(S.warning_sign==='refused_witnessed') discS+=3;
+  if(S.hearing==='no') discS+=7; else if(S.hearing==='informal') discS+=3;
+  if(S.documentation==='none') discS+=5; else if(S.documentation==='partial') discS+=2;
+  scores.discipline=Math.min(discS,22);
 
   var es=0;
   var am={cooperative:0,neutral:3,resistant:8,threatening:13,lawyer:18};
@@ -783,8 +876,21 @@ function assess(){
   if(S.near_retire==='at') es+=8; else if(S.near_retire==='near') es+=5; else if(S.near_retire==='approaching') es+=2;
   scores.employee=Math.min(es,20);
 
+  var eiS=0;
+  if(S.emp_init==='yes'){
+    if(S.emp_init_letter==='no') eiS+=10;
+    else if(S.emp_init_letter==='verbal_only') eiS+=6;
+    if(S.emp_init_informed==='no') eiS+=8;
+    else if(S.emp_init_informed==='partial') eiS+=4;
+    if(S.emp_init_witness==='no') eiS+=5;
+    if(S.emp_init_medical==='no'&&S.emp_init_reason==='illness') eiS+=6;
+    if(S.constructive==='yes') eiS+=12;
+    else if(S.constructive==='possible') eiS+=6;
+  }
+  scores.emp_initiated=Math.min(eiS,18);
+
   var fs=0;
-  var sm={frontline:0,supervisor:2,manager:4,senior:6,executive:8};
+  var sm={staff:0,teamlead:2,funchead:5,csuite:8};
   fs+=sm[S.salary_band]||0;
   if(S.media_risk==='high') fs+=8; else if(S.media_risk==='med') fs+=4;
   if(S.replacement_ready==='no') fs+=3;
@@ -814,7 +920,11 @@ function assess(){
   if(S.near_retire==='at'||S.near_retire==='near') fh+='<span class="flag flag-warn">ใกล้เกษียณ</span>';
   if(S.comp_paid==='none') fh+='<span class="flag flag-crit">ไม่จ่ายชดเชย</span>';
   if(S.pip==='none'&&S.term_reason==='performance') fh+='<span class="flag flag-crit">ไม่มี PIP</span>';
+  if((S.pip_sign==='refused_no_witness'||S.pip_sign==='not_delivered')&&S.term_reason==='performance') fh+='<span class="flag flag-crit">PIP ไม่มีพยาน</span>';
+  if(S.warning_sign==='refused_no_witness'||S.warning_sign==='not_delivered') fh+='<span class="flag flag-crit">ใบเตือนไม่มีพยาน</span>';
   if(tenure>=20) fh+='<span class="flag flag-warn">อายุงาน 20+ ปี</span>';
+  if(S.constructive==='yes') fh+='<span class="flag flag-crit">Constructive Dismissal</span>';
+  if(S.emp_init==='yes'&&S.emp_init_letter==='no') fh+='<span class="flag flag-warn">ไม่มีหนังสือลาออก</span>';
   document.getElementById('r-flags').innerHTML=fh;
 
   var bItems=[
@@ -823,8 +933,10 @@ function assess(){
     {label:'ค่าชดเชย & สิทธิทางการเงิน',score:scores.severance,max:25},
     {label:'อายุงาน',score:scores.tenure,max:14},
     {label:'เหตุผล & กระบวนการแจ้ง',score:scores.reason,max:20},
-    {label:'PIP / วินัย / หลักฐาน',score:scores.process,max:20},
+    {label:'กระบวนการ Performance & PIP',score:scores.performance,max:22},
+    {label:'กระบวนการวินัย & การชี้แจง',score:scores.discipline,max:22},
     {label:'ทัศนคติ & grievance',score:scores.employee,max:20},
+    {label:'การพ้นงานตามประสงค์พนักงาน',score:scores.emp_initiated,max:18},
     {label:'ชื่อเสียง & ระดับตำแหน่ง',score:scores.financial,max:15},
   ];
   var bh='';
@@ -856,7 +968,13 @@ function buildRecs(){
   if(S.annual_leave==='none') r.push({c:'warn',t:'จ่ายค่าวันหยุดพักผ่อนสะสมที่ยังไม่ได้ใช้ให้ครบก่อนออกหนังสือเลิกจ้าง'});
   if(S.term_reason==='performance'&&S.pip==='none') r.push({c:'crit',t:'ไม่มี PIP — เสี่ยงถูกฟ้องเลิกจ้างไม่เป็นธรรมสูงมาก ต้องทำ PIP ให้ครบกระบวนการก่อน'});
   else if(S.pip==='ongoing') r.push({c:'warn',t:'PIP ยังไม่สิ้นสุด — ควรรอให้ครบกระบวนการก่อน เว้นแต่มีเหตุอื่นประกอบ'});
+  if(S.term_reason==='performance'&&S.pip_sign==='refused_no_witness') r.push({c:'crit',t:'พนักงานปฏิเสธเซ็น PIP โดยไม่มีพยาน — เอกสารอาจถูกโต้แย้งในศาลได้ง่าย ต้องมีพยานลงนามแทนและบันทึกว่า "ปฏิเสธการเซ็น"'});
+  if(S.term_reason==='performance'&&S.pip_sign==='not_delivered') r.push({c:'crit',t:'ยังไม่ได้ส่ง PIP ให้พนักงาน — ต้องส่งและมีหลักฐานการรับก่อนดำเนินการ'});
+  if(S.term_reason==='performance'&&S.pip_doc==='none') r.push({c:'warn',t:'ไม่มีหลักฐาน KPI / appraisal record ประกอบ PIP — รวบรวมให้ครบก่อน'});
   if(S.warning_letter==='no') r.push({c:'crit',t:'ไม่มีหนังสือเตือน — กระบวนการทางวินัยไม่ครบ เสี่ยงถูกฟ้องเลิกจ้างไม่เป็นธรรม'});
+  if(S.warning_sign==='refused_no_witness') r.push({c:'crit',t:'พนักงานปฏิเสธเซ็นใบเตือนโดยไม่มีพยาน — ให้พยาน HR อย่างน้อย 1 คนลงนาม และบันทึกว่า "พนักงานปฏิเสธการรับทราบ" พร้อมวันเวลา'});
+  if(S.warning_sign==='not_delivered') r.push({c:'crit',t:'ยังไม่ได้ส่งใบเตือนให้พนักงาน — ต้องส่งพร้อมมีหลักฐานการรับหรือพยานก่อนดำเนินการต่อ'});
+  if(S.warning_sign==='refused_witnessed') r.push({c:'warn',t:'พนักงานปฏิเสธเซ็นใบเตือน แต่มีพยาน — เอกสารใช้ได้ตามกฎหมาย แต่ควรระบุชื่อพยานและวันที่ให้ครบถ้วน'});
   if(S.hearing==='no') r.push({c:'crit',t:'ไม่มีการให้พนักงานชี้แจง — เป็นสิทธิขั้นพื้นฐานที่ต้องดำเนินการและบันทึกเป็นลายลักษณ์อักษร'});
   if(S.documentation==='none') r.push({c:'warn',t:'ไม่มีหลักฐานเอกสาร — รวบรวม KPI record, email, warning letter ก่อนดำเนินการ'});
   if(S.term_reason==='restructure'&&S.restr_genuine==='no') r.push({c:'crit',t:'ยังรับพนักงานคนอื่นในตำแหน่งเดิม — การ restructure จะถูกตีความว่าไม่ชอบธรรม'});
@@ -869,6 +987,17 @@ function buildRecs(){
   if(S.sick_leave==='yes') r.push({c:'warn',t:'อยู่ระหว่างลาป่วย — ตรวจสอบใบรับรองแพทย์ และระวังการเลิกจ้างในช่วงนี้จะถูกมองว่าเลือกปฏิบัติ'});
   if(S.near_retire==='at'||S.near_retire==='near') r.push({c:'warn',t:'ใกล้เกษียณ — ตรวจสอบนโยบาย early retirement และพิจารณา negotiate package พิเศษ'});
   if(S.media_risk==='high') r.push({c:'warn',t:'ความเสี่ยงด้านสื่อสูง — เตรียม communication plan และ media response ก่อนดำเนินการ'});
+  if(S.emp_init==='yes'){
+    if(S.emp_init_letter==='no') r.push({c:'crit',t:'ไม่มีหนังสือแสดงความประสงค์เป็นลายลักษณ์อักษร — ต้องให้พนักงานเขียนและลงนามก่อน มิฉะนั้นอาจถูกอ้างในภายหลังว่าถูกบังคับออก'});
+    else if(S.emp_init_letter==='verbal_only') r.push({c:'warn',t:'แจ้งด้วยวาจาเท่านั้น — ควรให้พนักงานยืนยันเป็นลายลักษณ์อักษรหรืออย่างน้อยส่ง email ยืนยัน'});
+    if(S.emp_init_informed==='no') r.push({c:'crit',t:'พนักงานไม่ได้รับแจ้งสิทธิก่อนตัดสินใจ — แจ้งสิทธิค่าชดเชย, สิทธิประกันสังคม และสวัสดิการที่เกี่ยวข้องให้ครบก่อน ป้องกันการกลับมาฟ้องภายหลัง'});
+    else if(S.emp_init_informed==='partial') r.push({c:'warn',t:'แจ้งสิทธิพนักงานไม่ครบ — ตรวจสอบและแจ้งเพิ่มเติมให้ครบถ้วน บันทึกเป็นลายลักษณ์อักษร'});
+    if(S.emp_init_witness==='no') r.push({c:'warn',t:'ไม่มีพยาน HR รับทราบ — ควรให้ HR อย่างน้อย 1 คนลงนามรับทราบในหนังสือแสดงความประสงค์'});
+    if(S.emp_init_reason==='illness'&&S.emp_init_medical==='no') r.push({c:'warn',t:'กรณีป่วยหนัก — ควรมีใบรับรองแพทย์ยืนยันประกอบ เพื่อรองรับสิทธิประกันสังคมและป้องกันข้อพิพาทในภายหลัง'});
+    if(S.emp_init_reason==='early_retire') r.push({c:'warn',t:'ขอเกษียณก่อนกำหนด — ตรวจสอบนโยบาย early retirement และสิทธิค่าชดเชยพิเศษที่พนักงานควรได้รับ'});
+    if(S.constructive==='yes') r.push({c:'crit',t:'ความเสี่ยง Constructive Dismissal สูง — ถ้าพนักงานถูกกดดันให้ลาออก ศาลแรงงานอาจตีความว่าเป็นการเลิกจ้างโดยนายจ้าง ปรึกษาฝ่ายกฎหมายก่อนดำเนินการ'});
+    else if(S.constructive==='possible') r.push({c:'warn',t:'อาจมีความเสี่ยง Constructive Dismissal — บันทึกว่าพนักงานตัดสินใจเองโดยสมัครใจ และไม่มีการเปลี่ยนแปลงสภาพการจ้างก่อนหน้า'});
+  }
   if(r.length===0) r.push({c:'ok',t:'ไม่พบ gap สำคัญ — ตรวจ checklist สุดท้ายและเตรียมเอกสารให้ครบก่อนวันแจ้ง'});
   document.getElementById('rec-items').innerHTML=r.map(function(x){return '<div class="rec '+x.c+'">'+x.t+'</div>';}).join('');
 }
