@@ -277,8 +277,8 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
         </div>
         <div class="flow-card" id="fc-E" onclick="selectFlow('E')">
           <div class="fc-icon">&#128203;</div>
-          <div class="fc-title">E — สัญญาสิ้นสุด / Mutual</div>
-          <div class="fc-sub">Contract end / ตกลงร่วมกัน</div>
+          <div class="fc-title">E — สัญญาสิ้นสุด</div>
+          <div class="fc-sub">Contract end / ไม่ต่อสัญญา</div>
         </div>
       </div>
       <div id="step3-container" style="margin-top:4px;"></div>
@@ -328,6 +328,11 @@ function pickTg(el){
   else el.classList.add('sel');
   S[fid]=el.dataset.val;
   checkHS();
+}
+
+function toggleMutual(){
+  var mf=document.getElementById('mutual-fields');
+  if(mf) mf.style.display=(S.method==='mutual')?'flex':'none';
 }
 
 function checkHS(){
@@ -541,27 +546,19 @@ var FLOWS={
     ]
   },
   E:{
-    title:'E — สัญญาสิ้นสุด / Mutual Agreement',
+    title:'E — สัญญาสิ้นสุด',
     fields:[
-      {id:'e_type',label:'ประเภท',type:'toggle',opts:[
-        {v:'contract',l:'สัญญาจ้างสิ้นสุด',s:''},
-        {v:'mutual',l:'Mutual Agreement',s:''},
-      ]},
-      {id:'e_notice',label:'แจ้งให้ทราบล่วงหน้าตามกำหนด?',type:'toggle',opts:[
+      {id:'e_notice',label:'แจ้งให้ทราบล่วงหน้าตามกำหนดในสัญญา?',type:'toggle',opts:[
         {v:'yes',l:'ใช่',s:''},
         {v:'no',l:'ไม่ได้แจ้ง',s:'danger'},
       ]},
-      {id:'e_mutual_letter',label:'กรณี Mutual — มีหนังสือตกลงร่วมกัน?',type:'toggle',opts:[
-        {v:'na',l:'N/A',s:''},
-        {v:'yes',l:'มี & ลงนามทั้งสองฝ่าย',s:''},
-        {v:'no',l:'ไม่มี',s:'danger'},
-      ]},
-      {id:'e_comp',label:'ค่าชดเชย / เงื่อนไขที่ตกลง',type:'toggle',opts:[
-        {v:'full',l:'ครบถ้วน & ตกลงกันได้',s:''},
+      {id:'e_comp',label:'ค่าชดเชย (ถ้ามีสิทธิ)',type:'toggle',opts:[
+        {v:'full',l:'ครบถ้วน',s:''},
         {v:'threshold',l:'ใกล้เปลี่ยน rate',s:'warn'},
         {v:'under',l:'ต่ำกว่ากฎหมาย',s:'danger'},
+        {v:'na',l:'N/A (ไม่มีสิทธิ)',s:''},
       ]},
-      {id:'e_informed',label:'พนักงานได้รับแจ้งสิทธิครบก่อนตัดสินใจ?',type:'toggle',opts:[
+      {id:'e_informed',label:'พนักงานได้รับแจ้งสิทธิครบก่อนสัญญาสิ้นสุด?',type:'toggle',opts:[
         {v:'yes',l:'ใช่ & มีบันทึก',s:''},
         {v:'partial',l:'บางส่วน',s:'warn'},
         {v:'no',l:'ไม่ได้แจ้ง',s:'danger'},
@@ -589,9 +586,46 @@ function renderStep3(flow){
     html+='</div>';
   });
   html+='</div>';
+  html+='</div>';
+  // Mutual method section
+  html+='<div style="border-top:0.5px solid var(--border);padding-top:14px;margin-top:4px;">';
+  html+='<div class="sec-lbl" style="margin-bottom:10px;">วิธีการดำเนินการ</div>';
+  html+='<div style="display:flex;flex-direction:column;gap:12px;">';
+  html+='<div class="field"><label>รูปแบบการพ้นงาน</label>';
+  html+='<div class="tg" id="tg-method">';
+  html+='<span class="tg-btn sel" data-field="method" data-val="unilateral" data-s="" onclick="pickTg(this);toggleMutual();">เลิกจ้างฝ่ายเดียว</span>';
+  html+='<span class="tg-btn" data-field="method" data-val="mutual" data-s="" onclick="pickTg(this);toggleMutual();">Mutual Agreement</span>';
+  html+='</div></div>';
+  html+='<div id="mutual-fields" style="display:none;flex-direction:column;gap:12px;">';
+  html+='<div class="field"><label>มีหนังสือ MOU / ข้อตกลง ลงนามทั้งสองฝ่าย?</label>';
+  html+='<div class="tg" id="tg-m_letter">';
+  html+='<span class="tg-btn sel" data-field="m_letter" data-val="yes" data-s="" onclick="pickTg(this)">มี & ลงนามแล้ว</span>';
+  html+='<span class="tg-btn" data-field="m_letter" data-val="draft" data-s="warn" onclick="pickTg(this)">ร่างแล้วแต่ยังไม่ลงนาม</span>';
+  html+='<span class="tg-btn" data-field="m_letter" data-val="no" data-s="danger" onclick="pickTg(this)">ไม่มี</span>';
+  html+='</div></div>';
+  html+='<div class="field"><label>พนักงานได้รับแจ้งสิทธิครบก่อนลงนาม?</label>';
+  html+='<div class="tg" id="tg-m_informed">';
+  html+='<span class="tg-btn sel" data-field="m_informed" data-val="yes" data-s="" onclick="pickTg(this)">ใช่ & มีบันทึก</span>';
+  html+='<span class="tg-btn" data-field="m_informed" data-val="partial" data-s="warn" onclick="pickTg(this)">บางส่วน</span>';
+  html+='<span class="tg-btn" data-field="m_informed" data-val="no" data-s="danger" onclick="pickTg(this)">ไม่ได้แจ้ง</span>';
+  html+='</div></div>';
+  html+='<div class="field"><label>Enhanced Package (เงินส่วนต่างเพิ่มจากกฎหมาย)</label>';
+  html+='<div class="tg" id="tg-m_package">';
+  html+='<span class="tg-btn sel" data-field="m_package" data-val="yes" data-s="" onclick="pickTg(this)">มี & ระบุชัดเจนในหนังสือ</span>';
+  html+='<span class="tg-btn" data-field="m_package" data-val="legal_only" data-s="warn" onclick="pickTg(this)">จ่ายตามกฎหมายเท่านั้น</span>';
+  html+='<span class="tg-btn" data-field="m_package" data-val="under" data-s="danger" onclick="pickTg(this)">ต่ำกว่ากฎหมาย</span>';
+  html+='</div></div>';
+  html+='<div class="field"><label>ระยะเวลาให้พนักงานพิจารณาก่อนลงนาม (Cooling-off)</label>';
+  html+='<div class="tg" id="tg-m_cooling">';
+  html+='<span class="tg-btn sel" data-field="m_cooling" data-val="yes" data-s="" onclick="pickTg(this)">มีเวลาพิจารณาเพียงพอ</span>';
+  html+='<span class="tg-btn" data-field="m_cooling" data-val="no" data-s="warn" onclick="pickTg(this)">ลงนามทันทีโดยไม่มีเวลาพิจารณา</span>';
+  html+='</div></div>';
+  html+='</div>';
+  html+='</div></div>';
   html+='<button class="btn-primary" style="margin-top:14px;" onclick="assess()">ประเมิน Risk Assessment</button>';
   html+='</div>';
   document.getElementById('step3-container').innerHTML=html;
+  S.method='unilateral';S.m_letter='yes';S.m_informed='yes';S.m_package='yes';S.m_cooling='yes';
 }
 
 function bc(pct){return pct<=30?'#2A6040':pct<=60?'#7A6010':'#B83232';}
@@ -712,14 +746,33 @@ function assess(){
   if(S.flow==='E'){
     var es=0;
     if(S.e_notice==='no') es+=10;
-    if(S.e_type==='mutual'&&S.e_mutual_letter==='no') es+=12;
     if(S.e_comp==='under') es+=10; else if(S.e_comp==='threshold') es+=5;
     if(S.e_informed==='no') es+=8; else if(S.e_informed==='partial') es+=4;
-    scores.flow=Math.min(es,25);
-    if(S.e_notice==='no') recs.push({c:'crit',t:'ต้องแจ้งล่วงหน้าตามที่กำหนดในสัญญาหรือ พ.ร.บ.คุ้มครองแรงงาน'});
-    if(S.e_type==='mutual'&&S.e_mutual_letter==='no') recs.push({c:'crit',t:'Mutual Agreement ต้องมีหนังสือและลงนามทั้งสองฝ่าย เพื่อป้องกันการกลับมาอ้างภายหลัง'});
-    if(S.e_comp==='under') recs.push({c:'crit',t:'เงื่อนไขต่ำกว่ากฎหมาย — แม้เป็น mutual ก็ต้องไม่ต่ำกว่าสิทธิขั้นต่ำตาม พ.ร.บ.'});
-    if(S.e_informed==='no') recs.push({c:'warn',t:'พนักงานไม่ได้รับแจ้งสิทธิครบ — แจ้งให้ครบก่อนลงนามเพื่อป้องกันการโต้แย้งภายหลัง'});
+    scores.flow=Math.min(es,20);
+    if(S.e_notice==='no') recs.push({c:'crit',t:'ต้องแจ้งให้ทราบล่วงหน้าตามที่กำหนดในสัญญาจ้าง'});
+    if(S.e_comp==='under') recs.push({c:'crit',t:'ค่าชดเชยต่ำกว่ากฎหมาย — ตรวจสอบสิทธิให้ครบก่อนสัญญาสิ้นสุด'});
+    if(S.e_informed==='no') recs.push({c:'warn',t:'พนักงานไม่ได้รับแจ้งสิทธิครบ — แจ้งให้ครบก่อนวันสิ้นสุดสัญญา'});
+  }
+
+  // Mutual scoring
+  if(S.method==='mutual'){
+    var ms=0;
+    if(S.m_letter==='no') ms+=15;
+    else if(S.m_letter==='draft') ms+=7;
+    if(S.m_informed==='no') ms+=10;
+    else if(S.m_informed==='partial') ms+=5;
+    if(S.m_package==='under') ms+=12;
+    else if(S.m_package==='legal_only') ms+=3;
+    if(S.m_cooling==='no') ms+=8;
+    scores.mutual=Math.min(ms,30);
+    if(S.m_letter==='no') recs.push({c:'crit',t:'Mutual Agreement ต้องมีหนังสือและลงนามทั้งสองฝ่าย — ไม่มีหนังสือเสี่ยงถูกอ้างภายหลังว่าเป็นการเลิกจ้างฝ่ายเดียว'});
+    else if(S.m_letter==='draft') recs.push({c:'warn',t:'ร่างหนังสือแล้วแต่ยังไม่ลงนาม — ต้องให้ทั้งสองฝ่ายลงนามก่อนดำเนินการ'});
+    if(S.m_informed==='no') recs.push({c:'crit',t:'พนักงานไม่ได้รับแจ้งสิทธิก่อนลงนาม — ต้องแจ้งสิทธิตาม พ.ร.บ.คุ้มครองแรงงานครบถ้วนก่อน มิฉะนั้นอาจถูกอ้างว่าลงนามโดยไม่รู้สิทธิ'});
+    if(S.m_package==='under') recs.push({c:'crit',t:'Enhanced package ต่ำกว่ากฎหมาย — แม้เป็น mutual ก็ต้องไม่ต่ำกว่าสิทธิขั้นต่ำตาม พ.ร.บ.คุ้มครองแรงงาน'});
+    if(S.m_cooling==='no') recs.push({c:'warn',t:'ไม่มีเวลา Cooling-off — ควรให้พนักงานมีเวลาพิจารณาอย่างน้อย 3-7 วันก่อนลงนาม เพื่อป้องกันการอ้างว่าถูกกดดัน'});
+    if(S.m_letter!=='no') flags.push({t:'Mutual Agreement',c:'flag-ok'});
+  } else {
+    scores.mutual=0;
   }
 
   // Shared recs
@@ -764,13 +817,14 @@ function assess(){
   if(S.age>=55) fh+='<span class="flag flag-warn">ใกล้เกษียณ</span>';
   document.getElementById('r-flags').innerHTML=fh;
 
-  var flowLabel={A:'การพ้นงานตามประสงค์พนักงาน',B:'Restructure & ค่าชดเชย',C:'Performance & กระบวนการ',D:'วินัย & การสอบสวน',E:'สัญญา / Mutual'};
+  var flowLabel={A:'การพ้นงานตามประสงค์พนักงาน',B:'Restructure & ค่าชดเชย',C:'Performance & กระบวนการ',D:'วินัย & การสอบสวน',E:'สัญญาจ้างสิ้นสุด'};
   var bItems=[
     {label:'อายุงาน',score:scores.tenure,max:14},
     {label:'ระดับตำแหน่ง',score:scores.level,max:8},
     {label:'สหภาพแรงงาน',score:scores.union,max:10},
     {label:'ทัศนคติ & grievance',score:scores.employee,max:20},
     {label:flowLabel[S.flow]||'Flow-specific',score:scores.flow||0,max:45},
+    {label:'Mutual Agreement',score:scores.mutual||0,max:30},
   ];
   var bh='';
   bItems.forEach(function(b){
