@@ -227,11 +227,11 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
           <div class="field">
             <label>ทัศนคติ / พฤติกรรมหลังแจ้ง</label>
             <select id="f-attitude" onchange="S.attitude=this.value;">
-              <option value="cooperative">ร่วมมือ / ยอมรับ</option>
-              <option value="neutral">เฉยๆ / ไม่แสดงออก</option>
-              <option value="resistant">ต่อต้าน / ไม่พอใจ</option>
-              <option value="threatening">ขู่จะฟ้อง / ก้าวร้าว</option>
-              <option value="lawyer">ติดต่อทนายความแล้ว</option>
+              <option value="cooperative">รับทราบและให้ความร่วมมือ</option>
+              <option value="neutral">ไม่แสดงปฏิกิริยาชัดเจน</option>
+              <option value="resistant">แสดงความไม่เห็นด้วยอย่างชัดเจน</option>
+              <option value="threatening">แสดงเจตนาจะดำเนินการทางกฎหมาย</option>
+              <option value="lawyer">อยู่ระหว่างขอคำปรึกษาทางกฎหมาย</option>
             </select>
           </div>
         </div>
@@ -399,7 +399,7 @@ var FLOWS={
         {v:'yes',l:'มี',s:''},
         {v:'no',l:'ไม่มี',s:'warn'},
       ]},
-      {id:'a_constructive',label:'ความเสี่ยง Constructive Dismissal (ถูกกดดันให้ออก)?',type:'toggle',opts:[
+      {id:'a_constructive',label:'ความเสี่ยง Constructive Dismissal (มีปัจจัยที่อาจส่งผลต่อการตัดสินใจของพนักงาน)?',type:'toggle',opts:[
         {v:'no',l:'ไม่มี',s:''},
         {v:'possible',l:'อาจเป็นไปได้',s:'warn'},
         {v:'yes',l:'มีความเสี่ยงสูง',s:'danger'},
@@ -456,9 +456,9 @@ var FLOWS={
       ]},
       {id:'c_pip_sign',label:'พนักงานเซ็นรับทราบ PIP?',type:'toggle',opts:[
         {v:'signed',l:'เซ็นรับทราบ',s:''},
-        {v:'refused_w',l:'ปฏิเสธ — มีพยาน',s:'warn'},
-        {v:'refused_nw',l:'ปฏิเสธ — ไม่มีพยาน',s:'danger'},
-        {v:'not_sent',l:'ยังไม่ได้ส่ง',s:'danger'},
+        {v:'refused_w',l:'ไม่ลงนามรับทราบ — มีพยาน',s:'warn'},
+        {v:'refused_nw',l:'ไม่ลงนามรับทราบ — ไม่มีพยาน',s:'danger'},
+        {v:'not_sent',l:'ยังไม่ได้จัดส่ง',s:'danger'},
       ]},
       {id:'c_kpi_doc',label:'หลักฐาน KPI / Appraisal Record',type:'toggle',opts:[
         {v:'strong',l:'ครบ & แน่นหนา',s:''},
@@ -472,9 +472,9 @@ var FLOWS={
       ]},
       {id:'c_warn_sign',label:'พนักงานเซ็นรับทราบใบเตือน?',type:'toggle',opts:[
         {v:'signed',l:'เซ็นรับทราบ',s:''},
-        {v:'refused_w',l:'ปฏิเสธ — มีพยาน',s:'warn'},
-        {v:'refused_nw',l:'ปฏิเสธ — ไม่มีพยาน',s:'danger'},
-        {v:'not_sent',l:'ยังไม่ได้ส่ง',s:'danger'},
+        {v:'refused_w',l:'ไม่ลงนามรับทราบ — มีพยาน',s:'warn'},
+        {v:'refused_nw',l:'ไม่ลงนามรับทราบ — ไม่มีพยาน',s:'danger'},
+        {v:'not_sent',l:'ยังไม่ได้จัดส่ง',s:'danger'},
         {v:'na',l:'N/A',s:''},
       ]},
       {id:'c_hearing',label:'มีการให้พนักงานชี้แจงก่อนเลิกจ้าง?',type:'toggle',opts:[
@@ -517,9 +517,9 @@ var FLOWS={
       ]},
       {id:'d_warn_sign',label:'พนักงานเซ็นรับทราบใบเตือน?',type:'toggle',opts:[
         {v:'signed',l:'เซ็นรับทราบ',s:''},
-        {v:'refused_w',l:'ปฏิเสธ — มีพยาน',s:'warn'},
-        {v:'refused_nw',l:'ปฏิเสธ — ไม่มีพยาน',s:'danger'},
-        {v:'not_sent',l:'ยังไม่ได้ส่ง',s:'danger'},
+        {v:'refused_w',l:'ไม่ลงนามรับทราบ — มีพยาน',s:'warn'},
+        {v:'refused_nw',l:'ไม่ลงนามรับทราบ — ไม่มีพยาน',s:'danger'},
+        {v:'not_sent',l:'ยังไม่ได้จัดส่ง',s:'danger'},
         {v:'na',l:'N/A',s:''},
       ]},
       {id:'d_hearing',label:'มีการให้พนักงานชี้แจง (Hearing)?',type:'toggle',opts:[
@@ -640,7 +640,7 @@ function assess(){
     if(S.a_witness==='no') recs.push({c:'warn',t:'ไม่มีพยาน HR — ให้ HR อย่างน้อย 1 คนลงนามรับทราบในหนังสือแสดงความประสงค์'});
     if(S.a_reason==='illness'&&S.a_medical==='no') recs.push({c:'warn',t:'กรณีป่วยหนัก — ควรมีใบรับรองแพทย์ยืนยันประกอบเพื่อรองรับสิทธิประกันสังคม'});
     if(S.a_reason==='early_retire') recs.push({c:'warn',t:'ขอเกษียณก่อนกำหนด — ตรวจสอบนโยบาย early retirement และสิทธิค่าชดเชยพิเศษที่พนักงานควรได้'});
-    if(S.a_constructive==='yes') recs.push({c:'crit',t:'ความเสี่ยง Constructive Dismissal สูง — ถ้าพนักงานถูกกดดันให้ลาออก ศาลอาจตีความว่านายจ้างเลิกจ้าง ปรึกษาฝ่ายกฎหมายทันที'});
+    if(S.a_constructive==='yes') recs.push({c:'crit',t:'ความเสี่ยง Constructive Dismissal สูง — ถ้าพนักงานมีปัจจัยที่อาจส่งผลต่อการตัดสินใจของพนักงาน ศาลอาจตีความว่านายจ้างเลิกจ้าง ปรึกษาฝ่ายกฎหมายทันที'});
     else if(S.a_constructive==='possible') recs.push({c:'warn',t:'อาจมีความเสี่ยง Constructive Dismissal — บันทึกว่าพนักงานตัดสินใจเองโดยสมัครใจ'});
   }
 
@@ -678,11 +678,11 @@ function assess(){
     scores.flow=Math.min(cs,45);
     if(S.c_pip==='none') recs.push({c:'crit',t:'ไม่มี PIP — เสี่ยงถูกฟ้องเลิกจ้างไม่เป็นธรรมสูงมาก ต้องทำ PIP ให้ครบกระบวนการก่อน'});
     else if(S.c_pip==='ongoing') recs.push({c:'warn',t:'PIP ยังไม่สิ้นสุด — ควรรอให้ครบกระบวนการก่อน'});
-    if(S.c_pip_sign==='refused_nw') recs.push({c:'crit',t:'พนักงานปฏิเสธเซ็น PIP โดยไม่มีพยาน — ต้องมีพยาน HR ลงนามแทนและบันทึกว่า "ปฏิเสธการเซ็น"'});
-    if(S.c_pip_sign==='not_sent') recs.push({c:'crit',t:'ยังไม่ได้ส่ง PIP ให้พนักงาน — ต้องส่งและมีหลักฐานการรับก่อน'});
+    if(S.c_pip_sign==='refused_nw') recs.push({c:'crit',t:'พนักงานไม่ลงนามรับทราบ PIP โดยไม่มีพยาน — ต้องมีพยาน HR ลงนามแทนและบันทึกว่า "ไม่ลงนามรับทราบ"'});
+    if(S.c_pip_sign==='not_sent') recs.push({c:'crit',t:'ยังไม่ได้จัดส่ง PIP ให้พนักงาน — ต้องส่งและมีหลักฐานการรับก่อน'});
     if(S.c_kpi_doc==='none') recs.push({c:'warn',t:'ไม่มีหลักฐาน KPI — รวบรวม appraisal record, email, KPI report ก่อนดำเนินการ'});
     if(S.c_warning==='no') recs.push({c:'crit',t:'ไม่มีหนังสือเตือน — กระบวนการทางวินัยไม่ครบ'});
-    if(S.c_warn_sign==='refused_nw') recs.push({c:'crit',t:'พนักงานปฏิเสธเซ็นใบเตือนโดยไม่มีพยาน — ให้พยาน HR ลงนามและบันทึกการปฏิเสธพร้อมวันเวลา'});
+    if(S.c_warn_sign==='refused_nw') recs.push({c:'crit',t:'พนักงานไม่ลงนามรับทราบใบเตือน — ไม่มีพยาน — ให้พยาน HR ลงนามและบันทึกการไม่ลงนามรับทราบพร้อมวันเวลา'});
     if(S.c_hearing==='no') recs.push({c:'crit',t:'ต้องให้พนักงานชี้แจงก่อนเลิกจ้าง บันทึกเป็นลายลักษณ์อักษร'});
     if(S.c_comp==='none') recs.push({c:'crit',t:'ไม่จ่ายค่าชดเชย — ผิดกฎหมาย ต้องจ่ายตาม พ.ร.บ.คุ้มครองแรงงาน'});
     if(S.c_notice_pay==='none') recs.push({c:'crit',t:'ต้องจ่าย Notice Pay หรือบอกกล่าวล่วงหน้าอย่างน้อย 1 รอบจ่ายค่าจ้าง'});
@@ -703,7 +703,7 @@ function assess(){
     scores.flow=Math.min(ds,40);
     if(S.d_investigation==='no') recs.push({c:'crit',t:'ไม่มีการสอบสวนอย่างเป็นทางการ — ต้องตั้งคณะสอบสวนและบันทึกผลก่อนดำเนินการ'});
     if(S.d_severity!=='gross'&&S.d_warning==='no') recs.push({c:'crit',t:'ไม่มีหนังสือเตือน — ต้องครบขั้นตอนก่อน ยกเว้นกรณีความผิดร้ายแรงมาก'});
-    if(S.d_warn_sign==='refused_nw') recs.push({c:'crit',t:'พนักงานปฏิเสธเซ็นใบเตือนโดยไม่มีพยาน — ให้พยาน HR ลงนามแทนและบันทึกวันเวลาทันที'});
+    if(S.d_warn_sign==='refused_nw') recs.push({c:'crit',t:'พนักงานไม่ลงนามรับทราบใบเตือน — ไม่มีพยาน — ให้พยาน HR ลงนามแทนและบันทึกวันเวลาทันที'});
     if(S.d_hearing==='no') recs.push({c:'crit',t:'ไม่มีการให้ชี้แจง (Hearing) — เป็นสิทธิขั้นพื้นฐาน ถ้าไม่ทำเสี่ยงถูกฟ้องสูงมาก'});
     if(S.d_evidence==='none') recs.push({c:'crit',t:'ไม่มีหลักฐานความผิด — ต้องรวบรวมก่อน การเลิกจ้างโดยไม่มีหลักฐานจะแพ้คดีแน่นอน'});
     if(S.d_comp==='none_risk') recs.push({c:'warn',t:'ไม่แน่ใจสิทธิค่าชดเชย — ปรึกษาฝ่ายกฎหมายก่อน กรณีความผิดร้ายแรงมากตาม ม.119 เท่านั้นที่ยกเว้นได้'});
@@ -724,8 +724,8 @@ function assess(){
 
   // Shared recs
   if(S.grievance==='pending') recs.push({c:'crit',t:'มี grievance ค้างอยู่ — ต้องแก้ไขก่อน การเลิกจ้างขณะ grievance ค้างเสี่ยงถูกมองว่าเป็น retaliation'});
-  if(S.attitude==='lawyer') recs.push({c:'crit',t:'พนักงานติดต่อทนายแล้ว — บันทึกทุก communication และปรึกษาฝ่ายกฎหมายก่อนดำเนินการต่อ'});
-  else if(S.attitude==='threatening') recs.push({c:'warn',t:'พนักงานขู่ฟ้อง — มี HR witness ทุก session ไม่สื่อสารผ่าน Line ส่วนตัว'});
+  if(S.attitude==='lawyer') recs.push({c:'crit',t:'พนักงานอยู่ระหว่างขอคำปรึกษาทางกฎหมาย — บันทึกทุก communication และปรึกษาฝ่ายกฎหมายก่อนดำเนินการต่อ'});
+  else if(S.attitude==='threatening') recs.push({c:'warn',t:'พนักงานแสดงเจตนาจะดำเนินการทางกฎหมาย — มี HR witness ทุก session บันทึกการสื่อสารทุกช่องทางเป็นลายลักษณ์อักษร'});
   if(S.union==='member') recs.push({c:'warn',t:'สมาชิกสหภาพ — ตรวจสอบข้อตกลงสหภาพ (CBA) ว่ามีกระบวนการพิเศษหรือไม่'});
   if(S.sickleave==='yes') recs.push({c:'warn',t:'อยู่ระหว่างลาป่วย — ระวังการเลิกจ้างในช่วงนี้จะถูกมองว่าเลือกปฏิบัติ'});
   if(S.age>=55) recs.push({c:'warn',t:'พนักงานอายุ '+S.age+' ปี — พิจารณา transition support หรือ extended notice period'});
@@ -757,8 +757,8 @@ function assess(){
   if(S.whistle==='yes') fh+='<span class="flag flag-block">Whistleblower</span>';
   if(S.witness==='yes') fh+='<span class="flag flag-block">Key witness</span>';
   if(S.union==='member') fh+='<span class="flag flag-warn">Union member</span>';
-  if(S.attitude==='lawyer') fh+='<span class="flag flag-crit">ติดต่อทนาย</span>';
-  if(S.attitude==='threatening') fh+='<span class="flag flag-warn">ขู่ฟ้อง</span>';
+  if(S.attitude==='lawyer') fh+='<span class="flag flag-crit">ขอคำปรึกษาทางกฎหมาย</span>';
+  if(S.attitude==='threatening') fh+='<span class="flag flag-warn">แจ้งดำเนินการทางกฎหมาย</span>';
   if(S.grievance==='pending') fh+='<span class="flag flag-crit">Grievance ค้าง</span>';
   if(S.tenure>=20) fh+='<span class="flag flag-warn">อายุงาน 20+ ปี</span>';
   if(S.age>=55) fh+='<span class="flag flag-warn">ใกล้เกษียณ</span>';
