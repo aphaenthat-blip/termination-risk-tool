@@ -302,6 +302,9 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
     <div class="recs-title">Action Required & ข้อแนะนำ</div>
     <div id="rec-items"></div>
     <div class="divider"></div>
+    <div class="recs-title" style="color:var(--accent);">สรุปสำหรับแนบ Approval Memo</div>
+    <div id="memo-summary" style="background:var(--accent-l);border:0.5px solid var(--border-s);border-radius:var(--r);padding:12px 14px;font-size:12px;line-height:1.7;color:var(--text);white-space:pre-line;font-family:var(--mono);"></div>
+    <div class="divider"></div>
     <div class="result-meta">ประเมิน ณ วันที่: <span id="r-date"></span> &nbsp;|&nbsp; พนักงาน: <span id="r-name"></span> &nbsp;|&nbsp; ตำแหน่ง: <span id="r-pos"></span></div>
   </div>
   <button class="print-btn" onclick="window.print()" id="print-btn" style="display:none;">พิมพ์ / บันทึก PDF</button>
@@ -589,43 +592,24 @@ function renderStep3(flow){
   html+='</div>';
   // Mutual method section
   html+='<div style="border-top:0.5px solid var(--border);padding-top:14px;margin-top:4px;">';
-  html+='<div class="sec-lbl" style="margin-bottom:10px;">วิธีการดำเนินการ</div>';
+  html+='<div class="sec-lbl" style="margin-bottom:10px;">แนวทางการดำเนินการ — ผลนี้จะใช้แนบใน Approval Memo</div>';
   html+='<div style="display:flex;flex-direction:column;gap:12px;">';
-  html+='<div class="field"><label>รูปแบบการพ้นงาน</label>';
+  html+='<div class="field"><label>วางแผนดำเนินการแบบใด</label>';
   html+='<div class="tg" id="tg-method">';
   html+='<span class="tg-btn sel" data-field="method" data-val="unilateral" data-s="" onclick="pickTg(this);toggleMutual();">เลิกจ้างฝ่ายเดียว</span>';
   html+='<span class="tg-btn" data-field="method" data-val="mutual" data-s="" onclick="pickTg(this);toggleMutual();">Mutual Agreement</span>';
   html+='</div></div>';
-  html+='<div id="mutual-fields" style="display:none;flex-direction:column;gap:12px;">';
-  html+='<div class="field"><label>มีหนังสือ MOU / ข้อตกลง ลงนามทั้งสองฝ่าย?</label>';
-  html+='<div class="tg" id="tg-m_letter">';
-  html+='<span class="tg-btn sel" data-field="m_letter" data-val="yes" data-s="" onclick="pickTg(this)">มี & ลงนามแล้ว</span>';
-  html+='<span class="tg-btn" data-field="m_letter" data-val="draft" data-s="warn" onclick="pickTg(this)">ร่างแล้วแต่ยังไม่ลงนาม</span>';
-  html+='<span class="tg-btn" data-field="m_letter" data-val="no" data-s="danger" onclick="pickTg(this)">ไม่มี</span>';
-  html+='</div></div>';
-  html+='<div class="field"><label>พนักงานได้รับแจ้งสิทธิครบก่อนลงนาม?</label>';
-  html+='<div class="tg" id="tg-m_informed">';
-  html+='<span class="tg-btn sel" data-field="m_informed" data-val="yes" data-s="" onclick="pickTg(this)">ใช่ & มีบันทึก</span>';
-  html+='<span class="tg-btn" data-field="m_informed" data-val="partial" data-s="warn" onclick="pickTg(this)">บางส่วน</span>';
-  html+='<span class="tg-btn" data-field="m_informed" data-val="no" data-s="danger" onclick="pickTg(this)">ไม่ได้แจ้ง</span>';
-  html+='</div></div>';
-  html+='<div class="field"><label>Enhanced Package (เงินส่วนต่างเพิ่มจากกฎหมาย)</label>';
-  html+='<div class="tg" id="tg-m_package">';
-  html+='<span class="tg-btn sel" data-field="m_package" data-val="yes" data-s="" onclick="pickTg(this)">มี & ระบุชัดเจนในหนังสือ</span>';
-  html+='<span class="tg-btn" data-field="m_package" data-val="legal_only" data-s="warn" onclick="pickTg(this)">จ่ายตามกฎหมายเท่านั้น</span>';
-  html+='<span class="tg-btn" data-field="m_package" data-val="under" data-s="danger" onclick="pickTg(this)">ต่ำกว่ากฎหมาย</span>';
-  html+='</div></div>';
-  html+='<div class="field"><label>ระยะเวลาให้พนักงานพิจารณาก่อนลงนาม (Cooling-off)</label>';
-  html+='<div class="tg" id="tg-m_cooling">';
-  html+='<span class="tg-btn sel" data-field="m_cooling" data-val="yes" data-s="" onclick="pickTg(this)">มีเวลาพิจารณาเพียงพอ</span>';
-  html+='<span class="tg-btn" data-field="m_cooling" data-val="no" data-s="warn" onclick="pickTg(this)">ลงนามทันทีโดยไม่มีเวลาพิจารณา</span>';
-  html+='</div></div>';
+  html+='<div id="mutual-fields" style="display:none;flex-direction:column;gap:8px;margin-top:4px;">';
+  html+='<div class="field"><label>เงินเดือนปัจจุบัน (บาท) — สำหรับคำนวณ Ex-gratia estimate ใน Memo</label>';
+  html+='<input type="number" id="inp-salary" placeholder="เช่น 50000" style="font-family:var(--font);font-size:13px;padding:6px 10px;border:0.5px solid var(--border-s);border-radius:var(--r);background:var(--bg);color:var(--text);width:100%;max-width:260px;" oninput="S.salary=parseInt(this.value)||0;">';
+  html+='</div>';
   html+='</div>';
   html+='</div></div>';
   html+='<button class="btn-primary" style="margin-top:14px;" onclick="assess()">ประเมิน Risk Assessment</button>';
+
   html+='</div>';
   document.getElementById('step3-container').innerHTML=html;
-  S.method='unilateral';S.m_letter='yes';S.m_informed='yes';S.m_package='yes';S.m_cooling='yes';
+  S.method='unilateral';S.salary=0;
 }
 
 function bc(pct){return pct<=30?'#2A6040':pct<=60?'#7A6010':'#B83232';}
@@ -754,28 +738,15 @@ function assess(){
     if(S.e_informed==='no') recs.push({c:'warn',t:'พนักงานไม่ได้รับแจ้งสิทธิครบ — แจ้งให้ครบก่อนวันสิ้นสุดสัญญา'});
   }
 
-  // Mutual scoring
+  // Mutual scoring — phase 1 only, no MOU/process fields
   if(S.method==='mutual'){
-    var ms=0;
-    if(S.m_letter==='no') ms+=15;
-    else if(S.m_letter==='draft') ms+=7;
-    if(S.m_informed==='no') ms+=10;
-    else if(S.m_informed==='partial') ms+=5;
-    if(S.m_package==='under') ms+=12;
-    else if(S.m_package==='legal_only') ms+=3;
-    if(S.m_cooling==='no') ms+=8;
-    scores.mutual=Math.min(ms,30);
-    if(S.m_letter==='no') recs.push({c:'crit',t:'Mutual Agreement ต้องมีหนังสือและลงนามทั้งสองฝ่าย — ไม่มีหนังสือเสี่ยงถูกอ้างภายหลังว่าเป็นการเลิกจ้างฝ่ายเดียว'});
-    else if(S.m_letter==='draft') recs.push({c:'warn',t:'ร่างหนังสือแล้วแต่ยังไม่ลงนาม — ต้องให้ทั้งสองฝ่ายลงนามก่อนดำเนินการ'});
-    if(S.m_informed==='no') recs.push({c:'crit',t:'พนักงานไม่ได้รับแจ้งสิทธิก่อนลงนาม — ต้องแจ้งสิทธิตาม พ.ร.บ.คุ้มครองแรงงานครบถ้วนก่อน มิฉะนั้นอาจถูกอ้างว่าลงนามโดยไม่รู้สิทธิ'});
-    if(S.m_package==='under') recs.push({c:'crit',t:'Enhanced package ต่ำกว่ากฎหมาย — แม้เป็น mutual ก็ต้องไม่ต่ำกว่าสิทธิขั้นต่ำตาม พ.ร.บ.คุ้มครองแรงงาน'});
-    if(S.m_cooling==='no') recs.push({c:'warn',t:'ไม่มีเวลา Cooling-off — ควรให้พนักงานมีเวลาพิจารณาอย่างน้อย 3-7 วันก่อนลงนาม เพื่อป้องกันการอ้างว่าถูกกดดัน'});
-    if(S.m_letter!=='no') flags.push({t:'Mutual Agreement',c:'flag-ok'});
+    scores.mutual=0; // No process fields to score in phase 1
+    flags.push({t:'Mutual Agreement',c:'flag-ok'});
   } else {
     scores.mutual=0;
   }
 
-  // Shared recs
+    // Shared recs
   if(S.grievance==='pending') recs.push({c:'crit',t:'มี grievance ค้างอยู่ — ต้องแก้ไขก่อน การเลิกจ้างขณะ grievance ค้างเสี่ยงถูกมองว่าเป็น retaliation'});
   if(S.attitude==='lawyer') recs.push({c:'crit',t:'พนักงานอยู่ระหว่างขอคำปรึกษาทางกฎหมาย — บันทึกทุก communication และปรึกษาฝ่ายกฎหมายก่อนดำเนินการต่อ'});
   else if(S.attitude==='threatening') recs.push({c:'warn',t:'พนักงานแสดงเจตนาจะดำเนินการทางกฎหมาย — มี HR witness ทุก session บันทึกการสื่อสารทุกช่องทางเป็นลายลักษณ์อักษร'});
@@ -824,7 +795,7 @@ function assess(){
     {label:'สหภาพแรงงาน',score:scores.union,max:10},
     {label:'ทัศนคติ & grievance',score:scores.employee,max:20},
     {label:flowLabel[S.flow]||'Flow-specific',score:scores.flow||0,max:45},
-    {label:'Mutual Agreement',score:scores.mutual||0,max:30},
+
   ];
   var bh='';
   bItems.forEach(function(b){
@@ -850,6 +821,63 @@ function assess(){
   document.getElementById('r-name').textContent=document.getElementById('empName').value||'-';
   document.getElementById('r-pos').textContent=document.getElementById('position').value||'-';
 
+  // Generate Approval Memo Summary
+  var empName = document.getElementById('empName').value||'-';
+  var empPos  = document.getElementById('position').value||'-';
+  var flowNames={A:'พนักงานร้องขอเอง',B:'Restructure/Redundancy',C:'ผลงานไม่ผ่านเกณฑ์',D:'วินัย/ความประพฤติ',E:'สัญญาสิ้นสุด'};
+  var pathTh = S.method==='mutual'?'Mutual Agreement':'เลิกจ้างฝ่ายเดียว (Unilateral)';
+  var lvlMap = {staff:'Staff',teamlead:'Team Lead',funchead:'Function Head',csuite:'C-Suite'};
+  var NL = '\n';
+  var DIV = '─────────────────────────────────' + NL;
+  var exGratiaText = '-';
+  if(S.method==='mutual' && S.salary>0 && S.tenure>0){
+    var egMonths = parseFloat((S.tenure * 0.2).toFixed(1));
+    var egAmt = Math.round(S.salary * egMonths);
+    exGratiaText = egMonths + ' เดือน = ' + egAmt.toLocaleString() + ' บาท';
+    if(S.age>=55 && S.age<60){
+      exGratiaText += NL + '   + Early Retirement Bonus = ' + S.salary.toLocaleString() + ' บาท (1 เดือน)';
+    }
+  } else if(S.method==='mutual'){
+    exGratiaText = 'กรุณาระบุเงินเดือนเพื่อคำนวณ';
+  }
+  var memoFlags = [];
+  if(S.pregnant!=='no') memoFlags.push('[Hard Stop] ตั้งครรภ์/ลาคลอด');
+  if(S.union==='officer') memoFlags.push('[Hard Stop] กรรมการสหภาพ');
+  if(S.military==='yes') memoFlags.push('[Hard Stop] รับราชการทหาร');
+  if(S.whistle==='yes') memoFlags.push('[ระวัง] Whistleblower');
+  if(S.union==='member') memoFlags.push('[ระวัง] สมาชิกสหภาพ');
+  if(S.attitude==='lawyer') memoFlags.push('[ระวัง] อยู่ระหว่างขอคำปรึกษาทางกฎหมาย');
+  if(S.grievance==='pending') memoFlags.push('[ระวัง] มี Grievance ค้างอยู่');
+  if(S.tenure>=20) memoFlags.push('[ระวัง] อายุงาน 20+ ปี');
+  var lines = [];
+  lines.push(DIV);
+  lines.push('TERMINATION RISK ASSESSMENT — MEMO SUMMARY' + NL);
+  lines.push(DIV);
+  lines.push('พนักงาน        : ' + empName);
+  lines.push('ตำแหน่ง        : ' + empPos);
+  lines.push('ระดับ           : ' + (lvlMap[S.level]||S.level));
+  lines.push('อายุงาน         : ' + S.tenure + ' ปี  |  อายุ: ' + S.age + ' ปี');
+  lines.push('ประเภทการพ้นงาน : ' + (flowNames[S.flow]||S.flow));
+  lines.push('');
+  lines.push('Risk Score      : ' + (hardBlocked ? 'HARD STOP' : total));
+  lines.push('Risk Level      : ' + lv);
+  lines.push('แนวทางที่แนะนำ  : ' + pathTh);
+  if(S.method==='mutual'){
+    lines.push('');
+    lines.push('Ex-gratia Estimate');
+    lines.push('  สูตร: เงินเดือน x อายุงาน x 0.2');
+    lines.push('  ประมาณการ: ' + exGratiaText);
+  }
+  if(memoFlags.length>0){
+    lines.push('');
+    lines.push('ข้อควรระวัง:');
+    memoFlags.forEach(function(f){ lines.push('  ' + f); });
+  }
+  lines.push('');
+  lines.push('ประเมิน ณ : ' + new Date().toLocaleDateString('th-TH',{year:'numeric',month:'long',day:'numeric'}));
+  lines.push(DIV);
+  document.getElementById('memo-summary').textContent = lines.join(NL);
+
   var rp=document.getElementById('result-panel');
   rp.style.display='block';
   document.getElementById('print-btn').style.display='block';
@@ -860,3 +888,4 @@ checkHS();
 </script>
 </body>
 </html>
+
