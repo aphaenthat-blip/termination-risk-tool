@@ -600,16 +600,14 @@ function renderStep3(flow){
   html+='<span class="tg-btn" data-field="method" data-val="mutual" data-s="" onclick="pickTg(this);toggleMutual();">Mutual Agreement</span>';
   html+='</div></div>';
   html+='<div id="mutual-fields" style="display:none;flex-direction:column;gap:8px;margin-top:4px;">';
-  html+='<div class="field"><label>เงินเดือนปัจจุบัน (บาท) — สำหรับคำนวณ Ex-gratia estimate ใน Memo</label>';
-  html+='<input type="number" id="inp-salary" placeholder="เช่น 50000" style="font-family:var(--font);font-size:13px;padding:6px 10px;border:0.5px solid var(--border-s);border-radius:var(--r);background:var(--bg);color:var(--text);width:100%;max-width:260px;" oninput="S.salary=parseInt(this.value)||0;">';
-  html+='</div>';
+  html+='<div style="font-size:12px;color:var(--text-2);padding:6px 0;">Ex-gratia และ Special Package พิจารณาตาม case โดย BU Chief และ CPO</div>';
   html+='</div>';
   html+='</div></div>';
   html+='<button class="btn-primary" style="margin-top:14px;" onclick="assess()">ประเมิน Risk Assessment</button>';
 
   html+='</div>';
   document.getElementById('step3-container').innerHTML=html;
-  S.method='unilateral';S.salary=0;
+  S.method='unilateral';
 }
 
 function bc(pct){return pct<=30?'#2A6040':pct<=60?'#7A6010':'#B83232';}
@@ -829,17 +827,7 @@ function assess(){
   var lvlMap = {staff:'Staff',teamlead:'Team Lead',funchead:'Function Head',csuite:'C-Suite'};
   var NL = '\n';
   var DIV = '─────────────────────────────────' + NL;
-  var exGratiaText = '-';
-  if(S.method==='mutual' && S.salary>0 && S.tenure>0){
-    var egMonths = parseFloat((S.tenure * 0.2).toFixed(1));
-    var egAmt = Math.round(S.salary * egMonths);
-    exGratiaText = egMonths + ' เดือน = ' + egAmt.toLocaleString() + ' บาท';
-    if(S.age>=55 && S.age<60){
-      exGratiaText += NL + '   + Early Retirement Bonus = ' + S.salary.toLocaleString() + ' บาท (1 เดือน)';
-    }
-  } else if(S.method==='mutual'){
-    exGratiaText = 'กรุณาระบุเงินเดือนเพื่อคำนวณ';
-  }
+
   var memoFlags = [];
   if(S.pregnant!=='no') memoFlags.push('[Hard Stop] ตั้งครรภ์/ลาคลอด');
   if(S.union==='officer') memoFlags.push('[Hard Stop] กรรมการสหภาพ');
@@ -864,9 +852,7 @@ function assess(){
   lines.push('แนวทางที่แนะนำ  : ' + pathTh);
   if(S.method==='mutual'){
     lines.push('');
-    lines.push('Ex-gratia Estimate');
-    lines.push('  สูตร: เงินเดือน x อายุงาน x 0.2');
-    lines.push('  ประมาณการ: ' + exGratiaText);
+    lines.push('Ex-gratia / Special Package : พิจารณา case by case โดย BU Chief และ CPO');
   }
   if(memoFlags.length>0){
     lines.push('');
@@ -888,4 +874,3 @@ checkHS();
 </script>
 </body>
 </html>
-
